@@ -1,1 +1,6 @@
-
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: david
+    password: 4137
+    url: jdbc:postgresql://localhost:5432/socialmedia
