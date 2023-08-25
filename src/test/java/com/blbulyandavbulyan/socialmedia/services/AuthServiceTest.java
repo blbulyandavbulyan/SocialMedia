@@ -28,6 +28,7 @@ class AuthServiceTest {
         Mockito.when(userService.existByUsername(username)).thenReturn(false);
         assertDoesNotThrow(()->authService.registerUser(username, password, email));
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(userService, Mockito.times(1)).existByUsername(username);
         Mockito.verify(userService, Mockito.times(1)).save(userCaptor.capture());
         User actualUser = userCaptor.getValue();
         assertTrue(passwordEncoder.matches(password, actualUser.getPassword()), "Passwords doesn't match!");
