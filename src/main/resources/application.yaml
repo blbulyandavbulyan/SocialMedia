@@ -4,3 +4,5 @@ spring:
     username: david
     password: 4137
     url: jdbc:postgresql://localhost:5432/socialmedia
+  jpa:
+    show-sql: true
