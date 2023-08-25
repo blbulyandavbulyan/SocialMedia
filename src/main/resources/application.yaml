@@ -6,3 +6,5 @@ spring:
     url: jdbc:postgresql://localhost:5432/socialmedia
   jpa:
     show-sql: true
+jwt:
+  lifetime: 10m
