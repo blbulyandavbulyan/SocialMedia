@@ -57,8 +57,8 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .securityMatcher("/api/**")
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth").anonymous()
-                        .requestMatchers("/register").anonymous()
+                        .requestMatchers("/api/v1/login").anonymous()
+                        .requestMatchers("/api/v1/register").anonymous()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
