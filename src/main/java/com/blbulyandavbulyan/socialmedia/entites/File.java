@@ -14,19 +14,19 @@ import java.util.UUID;
 @Table(name = "files")
 public class File {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "file_id")
-    private Long id;
+    @Column(name = "saved_file_name", nullable = false)
+    private UUID savedFileName;
     @ManyToOne
-    @JoinColumn(name = "uploader_username")
+    @JoinColumn(name = "uploader_username", nullable = false)
     private User uploader;
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "file_name", nullable = false)
-    private UUID fileName;
-    @Column(name = "file_extension")
+    @Column(name = "real_file_name", nullable = false)
+    private String realFileName;
+    @Column(name = "file_extension", nullable = false)
     private String fileExtension;
-    @Column(name = "mime_type")
+    @Column(name = "mime_type", nullable = false)
     private String mimeType;
     @CreationTimestamp
+    @Column(name = "loading_time", nullable = false)
     private Instant loadingTime;
 }
