@@ -1,16 +1,20 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.InvalidLoginOrPassword;
 import com.blbulyandavbulyan.socialmedia.utils.JWTTokenUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -52,5 +56,18 @@ class AuthServiceTest {
         assertSame(expectedToken, actualToken);
         Mockito.verify(jwtTokenUtils, Mockito.times(1)).generateToken(username, user.getAuthorities());
         Mockito.verify(userService, Mockito.times(1)).loadUserByUsername(user.getUsername());
+    }
+
+    @Test
+    @DisplayName("authorize with invalid login")
+    public void authorizeWithInvalidLogin() {
+        Mockito.when(userService.loadUserByUsername(any())).thenAnswer(invocationOnMock -> {
+            throw new UsernameNotFoundException("User name not found");
+        });
+        String username = "test";
+        var actualException = assertThrows(InvalidLoginOrPassword.class, () -> authService.authorize(username, "tset"));
+        assertEquals(HttpStatus.UNAUTHORIZED, actualException.getHttpStatus());
+        Mockito.verify(userService, Mockito.only()).loadUserByUsername(username);
+        Mockito.verify(jwtTokenUtils, Mockito.never()).generateToken(any(), any());
     }
 }
