@@ -2,7 +2,6 @@ package com.blbulyandavbulyan.socialmedia.dtos.errors;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.http.HttpStatusCode;
 
 import java.time.Instant;
@@ -12,5 +11,5 @@ import java.time.Instant;
 public class ApplicationError {
     private final HttpStatusCode httpStatusCode;
     private final String message;
-    private final Instant instant;
+    private final Instant timestamp;
 }

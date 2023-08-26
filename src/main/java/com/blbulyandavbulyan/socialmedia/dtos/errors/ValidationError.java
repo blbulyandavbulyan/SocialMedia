@@ -10,8 +10,8 @@ import java.util.Map;
 @Getter
 public class ValidationError extends ApplicationError{
     private final Map<String, List<String>> fieldErrors;
-    public ValidationError(HttpStatusCode httpStatusCode, String message, Instant instant, Map<String, List<String>> fieldErrors) {
-        super(httpStatusCode, message, instant);
+    public ValidationError(HttpStatusCode httpStatusCode, String message, Instant timestamp, Map<String, List<String>> fieldErrors) {
+        super(httpStatusCode, message, timestamp);
         this.fieldErrors = fieldErrors;
     }
 }
