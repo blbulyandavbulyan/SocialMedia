@@ -16,6 +16,8 @@
 	<properties>
 		<java.version>17</java.version>
 		<jjwt.version>0.11.5</jjwt.version>
+		<restdocs-spec.version>0.22</restdocs-spec.version>
+		<restdocs-api-spec.version>0.18.3</restdocs-api-spec.version>
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
@@ -88,6 +90,21 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.epages/restdocs-api-spec -->
+		<dependency>
+			<groupId>com.epages</groupId>
+			<artifactId>restdocs-api-spec</artifactId>
+			<version>${restdocs-api-spec.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.epages</groupId>
+			<artifactId>restdocs-api-spec-mockmvc</artifactId>
+			<version>${restdocs-api-spec.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -116,6 +133,22 @@
 						<version>${spring-restdocs.version}</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>io.github.berkleytechnologyservices</groupId>
+				<artifactId>restdocs-spec-maven-plugin</artifactId>
+				<version>${restdocs-spec.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<host>localhost:8080</host>
+							<outputDirectory>${project.build.directory}/classes/static/docs</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
