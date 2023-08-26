@@ -19,19 +19,21 @@ public class Publication {
     @Column(name = "publication_id")
     private Long id;
     @NotBlank
+    @Column(name = "title", nullable = false)
     private String title;
     @NotBlank
+    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
     private String text;
     @ManyToOne
-    @JoinColumn(name = "author_username")
+    @JoinColumn(name = "author_username", nullable = false)
     private User author;
     @CreationTimestamp
-    @Column(name = "publication_date")
+    @Column(name = "publication_date", nullable = false)
     private Instant publicationDate;
     @OneToMany
     @JoinTable(
             name = "publications_files",
-            uniqueConstraints = @UniqueConstraint(columnNames = {"publication_id", "file_id"}),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"file_id", "publication_id"}),
             joinColumns = @JoinColumn(name = "publication_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
