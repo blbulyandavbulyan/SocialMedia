@@ -23,7 +23,7 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public void save(User capture) {
+    public void save(User user) {
         // TODO: 25.08.2023 сделать реализацию
     }
 }
