@@ -1,5 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.entites;
 
+import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserEmail;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -24,17 +26,14 @@ import java.util.Collections;
 @NoArgsConstructor
 public class User implements UserDetails {
     @Id
-    @NotBlank
-    @Size(min = 1, message = "User name too short")
-    @Size(max = 50, message = "User name too long")
+    @ValidUserName
     @Column(nullable = false)
     private String username;
     @NotBlank
     @Column(nullable = false)
     @Size(min = 10, message = "Password too short")
     private String password;
-    @NotNull
-    @Email
+    @ValidUserEmail
     @Column(nullable = false)
     private String email;
 
