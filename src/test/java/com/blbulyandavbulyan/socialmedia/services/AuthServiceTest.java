@@ -70,4 +70,18 @@ class AuthServiceTest {
         Mockito.verify(userService, Mockito.only()).loadUserByUsername(username);
         Mockito.verify(jwtTokenUtils, Mockito.never()).generateToken(any(), any());
     }
+
+    @Test
+    @DisplayName("authorize with valid login, but invalid password")
+    public void authorizeWithInvalidPassword() {
+        String username = "david";
+        String password = "1234556";
+        String email = "test@gmail.com";
+        User user = new User(username, passwordEncoder.encode(password), email);
+        Mockito.when(userService.loadUserByUsername(user.getUsername())).thenReturn(user);
+        var actualException = assertThrows(InvalidLoginOrPassword.class, () -> authService.authorize(username, "tset"));
+        assertEquals(HttpStatus.UNAUTHORIZED, actualException.getHttpStatus());
+        Mockito.verify(jwtTokenUtils, Mockito.never()).generateToken(any(), any());
+        Mockito.verify(userService, Mockito.only()).loadUserByUsername(username);
+    }
 }
