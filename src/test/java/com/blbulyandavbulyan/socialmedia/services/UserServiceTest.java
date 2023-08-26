@@ -42,4 +42,18 @@ class UserServiceTest {
         assertThrows(UsernameNotFoundException.class, ()->userService.loadUserByUsername(username));
         Mockito.verify(userRepository, Mockito.only()).findById(username);
     }
+    @Test
+    @DisplayName("save not existing user")
+    public void saveNotExistingUser(){
+        String password = "1234556";
+        String username = "david";
+        String email = "test@gmail.com";
+        User user = new User(username, password, email);
+        Mockito.when(userRepository.existsByUsername(username)).thenReturn(false);
+        Mockito.when(userRepository.existsByEmail(email)).thenReturn(false);
+        assertDoesNotThrow(()->userService.save(user));
+        Mockito.verify(userRepository, Mockito.times(1)).existsByUsername(username);
+        Mockito.verify(userRepository, Mockito.times(1)).existsByEmail(email);
+        Mockito.verify(userRepository,Mockito.times(1)).save(user);
+    }
 }
