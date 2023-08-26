@@ -17,6 +17,9 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_id")
     private Long id;
+    @ManyToOne
+    @JoinColumn(name = "uploader_username")
+    private User uploader;
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "file_name", nullable = false)
     private UUID fileName;
