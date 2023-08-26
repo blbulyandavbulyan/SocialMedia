@@ -72,4 +72,19 @@ class UserServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, actualException.getHttpStatus());
         Mockito.verify(userRepository, Mockito.only()).existsByUsername(username);
     }
+    @Test
+    @DisplayName("save user when user with this email already exists")
+    public void saveUserWithExistingEmail(){
+        String password = "1234556";
+        String username = "david";
+        String email = "test@gmail.com";
+        User user = new User(username, password, email);
+        Mockito.when(userRepository.existsByUsername(username)).thenReturn(false);
+        Mockito.when(userRepository.existsByEmail(email)).thenReturn(true);
+        var actualException = assertThrows(UserWithThisEmailAlreadyExists.class, ()->userService.save(user));
+        assertEquals(HttpStatus.BAD_REQUEST, actualException.getHttpStatus());
+        Mockito.verify(userRepository, Mockito.times(1)).existsByUsername(username);
+        Mockito.verify(userRepository, Mockito.times(1)).existsByEmail(email);
+        Mockito.verifyNoMoreInteractions(userRepository);
+    }
 }
