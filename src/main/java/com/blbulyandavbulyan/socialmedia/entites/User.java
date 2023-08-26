@@ -25,7 +25,7 @@ import java.util.Collections;
 public class User implements UserDetails {
     @Id
     @ValidUserName
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String username;
     @NotBlank
     @Column(nullable = false)
