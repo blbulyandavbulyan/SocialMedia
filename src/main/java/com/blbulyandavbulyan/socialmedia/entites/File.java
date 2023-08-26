@@ -15,7 +15,7 @@ import java.util.UUID;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "file_id")
     private Long id;
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "file_name", nullable = false)
