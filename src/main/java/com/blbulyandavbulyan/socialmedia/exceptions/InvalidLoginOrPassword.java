@@ -6,4 +6,8 @@ public class InvalidLoginOrPassword extends SocialMediaException{
     public InvalidLoginOrPassword(String message) {
         super(message, HttpStatus.UNAUTHORIZED);
     }
+
+    public InvalidLoginOrPassword() {
+        this("Invalid login or password");
+    }
 }
