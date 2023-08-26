@@ -1,6 +1,9 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.InvalidLoginOrPassword;
+import com.blbulyandavbulyan.socialmedia.exceptions.UserWithThisEmailAlreadyExists;
+import com.blbulyandavbulyan.socialmedia.exceptions.UserWithThisNameAlreadyExist;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -55,5 +59,17 @@ class UserServiceTest {
         Mockito.verify(userRepository, Mockito.times(1)).existsByUsername(username);
         Mockito.verify(userRepository, Mockito.times(1)).existsByEmail(email);
         Mockito.verify(userRepository,Mockito.times(1)).save(user);
+    }
+    @Test
+    @DisplayName("save user when user with this name already exists")
+    public void saveUserWithExistingName(){
+        String password = "1234556";
+        String username = "david";
+        String email = "test@gmail.com";
+        User user = new User(username, password, email);
+        Mockito.when(userRepository.existsByUsername(username)).thenReturn(true);
+        var actualException = assertThrows(UserWithThisNameAlreadyExist.class, ()->userService.save(user));
+        assertEquals(HttpStatus.BAD_REQUEST, actualException.getHttpStatus());
+        Mockito.verify(userRepository, Mockito.only()).existsByUsername(username);
     }
 }
