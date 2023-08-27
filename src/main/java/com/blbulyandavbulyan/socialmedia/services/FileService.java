@@ -7,22 +7,28 @@ import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class FileService {
     private FileConfigurationProperties fileConfigurationProperties;
     private FileRepository fileRepository;
     private UserRepository userRepository;
     private ExtensionResolver extensionResolver;
+
     @Transactional
     public UUID save(MultipartFile multipartFile, String publisherName) {
         User uploader = userRepository.findById(publisherName).orElseThrow();
@@ -39,6 +45,19 @@ public class FileService {
             Files.copy(multipartFile.getInputStream(), fileConfigurationProperties.getPath().resolve(file.getSavedFileName().toString()), StandardCopyOption.REPLACE_EXISTING);
             return file.getSavedFileName();
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public record FoundFile(String fileName, String contentType, Resource resource) {
+    }
+
+    public FoundFile getFile(UUID fileUIID) {
+        try {
+            Resource resource = new UrlResource(fileConfigurationProperties.getPath().resolve(fileUIID.toString()).toUri());
+            return fileRepository.findById(fileUIID).map((file) -> new FoundFile(file.getRealFileName(), file.getMimeType(), resource)).orElseThrow();
+        } catch (MalformedURLException e) {
+            log.error("File with UUID '" + fileUIID +"' exists in DB but not found in file system!");
             throw new RuntimeException(e);
         }
     }
