@@ -1,4 +1,4 @@
-package com.blbulyandavbulyan.socialmedia.controllers;
+package com.blbulyandavbulyan.socialmedia.controllers.advice;
 
 import com.blbulyandavbulyan.socialmedia.dtos.errors.ApplicationError;
 import com.blbulyandavbulyan.socialmedia.dtos.errors.ValidationError;
