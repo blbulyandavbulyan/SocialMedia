@@ -8,3 +8,8 @@ spring:
     show-sql: true
 jwt:
   lifetime: 10m
+socialmedia:
+  files:
+    valid-extensions: [".jpg", ".JPG", ".jpeg", ".JPEG", ".jpe", ".JPE", ".png"]
+    valid-mime-types: ["image/png", "image/jpeg"]
+    path: /home/david/uploadFiles
