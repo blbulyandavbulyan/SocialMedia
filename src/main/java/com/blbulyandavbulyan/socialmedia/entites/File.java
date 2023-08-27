@@ -2,6 +2,7 @@ package com.blbulyandavbulyan.socialmedia.entites;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "files")
+@NoArgsConstructor
 public class File {
     @Id
     @Column(name = "saved_file_name", nullable = false)
@@ -29,4 +31,12 @@ public class File {
     @CreationTimestamp
     @Column(name = "loading_time", nullable = false)
     private Instant loadingTime;
+
+    public File(UUID savedFileName, User uploader, String realFileName, String fileExtension, String mimeType) {
+        this.savedFileName = savedFileName;
+        this.uploader = uploader;
+        this.realFileName = realFileName;
+        this.fileExtension = fileExtension;
+        this.mimeType = mimeType;
+    }
 }
