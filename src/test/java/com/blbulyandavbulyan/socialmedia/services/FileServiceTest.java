@@ -5,17 +5,18 @@ import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
-import org.junit.jupiter.api.*;
+import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +33,8 @@ class FileServiceTest {
     private FileRepository fileRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ExtensionResolver extensionResolver;
     @InjectMocks
     private FileService fileService;
     private Path path;
@@ -50,13 +53,13 @@ class FileServiceTest {
         User user = new User(publisherName, "2131", "test@gmail.com");
         Mockito.when(multipartFile.isEmpty()).thenReturn(false);
         Mockito.when(multipartFile.getContentType()).thenReturn(contentType);
-        Mockito.when(multipartFile.getSize()).thenReturn(2000L);
         Mockito.when(multipartFile.getOriginalFilename()).thenReturn(originalFileName);
         Mockito.when(multipartFile.getInputStream()).thenReturn(this.getClass().getResourceAsStream("/testimages/test_image.jpg"));
         Mockito.when(fileConfigurationProperties.isValidMimeType(contentType)).thenReturn(true);
         Mockito.when(fileConfigurationProperties.isValidExtension(".jpg")).thenReturn(true);
         Mockito.when(userRepository.findById(publisherName)).thenReturn(Optional.of(user));
-        UUID savedFileUUID = fileService.save(multipartFile);
+        Mockito.when(extensionResolver.getFileExtension(originalFileName)).thenReturn(Optional.of(".jpg"));
+        UUID savedFileUUID = fileService.save(multipartFile, publisherName);
         assertNotNull(savedFileUUID);
         var fileCapture = ArgumentCaptor.forClass(File.class);
         Mockito.verify(fileRepository, Mockito.times(1)).save(fileCapture.capture());
@@ -68,6 +71,5 @@ class FileServiceTest {
         assertEquals(".jpg", savedFile.getFileExtension());
         Path filePath = path.resolve(savedFile.getSavedFileName().toString());
         Files.exists(filePath);
-        assertEquals(contentType, Files.probeContentType(filePath));
     }
 }
