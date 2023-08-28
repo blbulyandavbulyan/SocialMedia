@@ -4,6 +4,7 @@ import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.EmptyFileException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasNotAllowedMimeTypeException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class FileService {
         if(multipartFile.isEmpty())
             throw new EmptyFileException("Uploading file is empty!");
         if(!fileConfigurationProperties.isValidMimeType(multipartFile.getContentType()))
-            throw new RuntimeException();
+            throw new UploadedFileHasNotAllowedMimeTypeException("Uploaded file has not allowed mime type!");
         String fileExtension = extensionResolver.getFileExtension(multipartFile.getOriginalFilename()).orElseThrow();
         if(!fileConfigurationProperties.isValidExtension(fileExtension))
             throw new RuntimeException();
