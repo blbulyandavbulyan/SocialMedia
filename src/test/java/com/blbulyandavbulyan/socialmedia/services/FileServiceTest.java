@@ -4,6 +4,7 @@ import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.EmptyFileException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasInvalidExtensionException;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasNotAllowedMimeTypeException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
@@ -91,6 +92,20 @@ class FileServiceTest {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.img", mimeType, new byte[]{2, 3, 4, 5, 6});
         assertThrows(UploadedFileHasNotAllowedMimeTypeException.class, ()->fileService.save(mockMultipartFile, publisherName));
         Mockito.verify(fileConfigurationProperties, Mockito.times(1)).isValidMimeType(mimeType);
+        Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
+    }
+    @Test
+    @DisplayName("save file with invalid extension")
+    public void saveFileWithInvalidExtension(){
+        String mimeType = "image/jpeg";
+        String publisherName = "testuser";
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.jpg", mimeType, new byte[]{2, 3, 4, 5, 6});
+        Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(new User()));
+        Mockito.when(fileConfigurationProperties.isValidExtension(".jpg")).thenReturn(false);
+        Mockito.when(fileConfigurationProperties.isValidMimeType(mimeType)).thenReturn(true);
+        Mockito.when(extensionResolver.getFileExtension(mockMultipartFile.getOriginalFilename())).thenReturn(Optional.of(".jpg"));
+        assertThrows(UploadedFileHasInvalidExtensionException.class, ()->fileService.save(mockMultipartFile, publisherName));
+        Mockito.verify(fileRepository, Mockito.never()).save(any());
         Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
     }
 }
