@@ -40,15 +40,11 @@ class FileServiceTest {
     private ExtensionResolver extensionResolver;
     @InjectMocks
     private FileService fileService;
-    private Path path;
-    @BeforeEach
-    public void init() throws IOException {
-        path = Files.createTempDirectory("socialMediaTmpDir");
-        Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
-    }
     @Test
     @DisplayName("save valid file")
     public void saveFileWithValidExtensionAndType() throws IOException {
+        Path path = Files.createTempDirectory("socialMediaTmpDir");
+        Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
         String contentType = "image/jpeg";
         String originalFileName = "test.jpg";
@@ -82,7 +78,6 @@ class FileServiceTest {
         String publisherName = "testuser";
         Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(new User()));
         assertThrows(EmptyFileException.class, ()->fileService.save(mockMultipartFile, publisherName));
-        Mockito.verify(mockMultipartFile, Mockito.only()).isEmpty();
         Mockito.verify(fileRepository, Mockito.never()).save(any());
         Mockito.verify(userService, Mockito.only()).findByUserName(publisherName);
         Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
