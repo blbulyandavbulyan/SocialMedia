@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.EmptyFileException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class FileService {
     public UUID save(MultipartFile multipartFile, String publisherName) {
         User uploader = userService.findByUserName(publisherName).orElseThrow();
         if(multipartFile.isEmpty())
-            throw new RuntimeException();
+            throw new EmptyFileException("Uploading file is empty!");
         if(!fileConfigurationProperties.isValidMimeType(multipartFile.getContentType()))
             throw new RuntimeException();
         String fileExtension = extensionResolver.getFileExtension(multipartFile.getOriginalFilename()).orElseThrow();
