@@ -4,6 +4,7 @@ import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.EmptyFileException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.FileNotFoundException;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasInvalidExtensionException;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasNotAllowedMimeTypeException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
@@ -62,7 +63,9 @@ public class FileService {
     public FoundFile getFile(UUID fileUIID) {
         try {
             Resource resource = new UrlResource(fileConfigurationProperties.getPath().resolve(fileUIID.toString()).toUri());
-            return fileRepository.findById(fileUIID).map((file) -> new FoundFile(file.getRealFileName(), file.getMimeType(), resource)).orElseThrow();
+            return fileRepository.findById(fileUIID)
+                    .map((file) -> new FoundFile(file.getRealFileName(), file.getMimeType(), resource))
+                    .orElseThrow(()->new FileNotFoundException("File with " + fileUIID + " not found!"));
         } catch (MalformedURLException e) {
             log.error("File with UUID '" + fileUIID +"' exists in DB but not found in file system!");
             throw new RuntimeException(e);
