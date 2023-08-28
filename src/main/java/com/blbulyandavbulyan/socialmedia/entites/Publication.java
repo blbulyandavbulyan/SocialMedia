@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.entites;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "publications")
+@NoArgsConstructor
 public class Publication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,4 +40,11 @@ public class Publication {
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
     private List<File> files;
+
+    public Publication(String title, String text, User author, List<File> files) {
+        this.title = title;
+        this.text = text;
+        this.author = author;
+        this.files = files;
+    }
 }
