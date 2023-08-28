@@ -3,6 +3,10 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.EmptyFileException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.FileNotFoundException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasInvalidExtensionException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasNotAllowedMimeTypeException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import lombok.AllArgsConstructor;
@@ -33,12 +37,12 @@ public class FileService {
     public UUID save(MultipartFile multipartFile, String publisherName) {
         User uploader = userService.findByUserName(publisherName).orElseThrow();
         if(multipartFile.isEmpty())
-            throw new RuntimeException();
+            throw new EmptyFileException("Uploading file is empty!");
         if(!fileConfigurationProperties.isValidMimeType(multipartFile.getContentType()))
-            throw new RuntimeException();
+            throw new UploadedFileHasNotAllowedMimeTypeException("Uploaded file has not allowed mime type!");
         String fileExtension = extensionResolver.getFileExtension(multipartFile.getOriginalFilename()).orElseThrow();
         if(!fileConfigurationProperties.isValidExtension(fileExtension))
-            throw new RuntimeException();
+            throw new UploadedFileHasInvalidExtensionException("Uploaded file has invalid extension!");
         File file = new File(UUID.randomUUID(), uploader, multipartFile.getOriginalFilename(), fileExtension, multipartFile.getContentType());
         fileRepository.save(file);
         try {
@@ -59,9 +63,15 @@ public class FileService {
     public FoundFile getFile(UUID fileUIID) {
         try {
             Resource resource = new UrlResource(fileConfigurationProperties.getPath().resolve(fileUIID.toString()).toUri());
-            return fileRepository.findById(fileUIID).map((file) -> new FoundFile(file.getRealFileName(), file.getMimeType(), resource)).orElseThrow();
+            FoundFile foundFile = fileRepository.findById(fileUIID)
+                    .map((file) -> new FoundFile(file.getRealFileName(), file.getMimeType(), resource))
+                    .orElseThrow(() -> new FileNotFoundException("File with " + fileUIID + " not found!"));
+            if(!resource.exists()){
+                log.error("File with UUID '" + fileUIID +"' exists in DB but not found in file system!");
+                throw new FileNotFoundException("File with " + fileUIID + " not found!");
+            }
+            return foundFile;
         } catch (MalformedURLException e) {
-            log.error("File with UUID '" + fileUIID +"' exists in DB but not found in file system!");
             throw new RuntimeException(e);
         }
     }
