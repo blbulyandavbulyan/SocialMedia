@@ -4,6 +4,7 @@ import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.EmptyFileException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.FileNotFoundException;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasInvalidExtensionException;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.UploadedFileHasNotAllowedMimeTypeException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,11 +47,14 @@ class FileServiceTest {
     private ExtensionResolver extensionResolver;
     @InjectMocks
     private FileService fileService;
+    private Path path = Files.createTempDirectory("socialMediaTmpDir");
+
+    FileServiceTest() throws IOException {
+    }
 
     @Test
     @DisplayName("save valid file")
     public void saveFileWithValidExtensionAndType() throws IOException {
-        Path path = Files.createTempDirectory("socialMediaTmpDir");
         Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
         String contentType = "image/jpeg";
@@ -137,7 +142,6 @@ class FileServiceTest {
         UUID savedFileName = UUID.randomUUID();
         com.blbulyandavbulyan.socialmedia.entites.File file = new File(savedFileName, new User(), fileName, fileExtension, contentType);
         Mockito.when(fileRepository.findById(savedFileName)).thenReturn(Optional.of(file));
-        Path path = Files.createTempDirectory("socialMediaTmpDir");
         Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
         Path expectedFilePath = path.resolve(savedFileName.toString());
         try(FileOutputStream fileOutputStream = new FileOutputStream(expectedFilePath.toString())){
@@ -152,5 +156,15 @@ class FileServiceTest {
         assertNotNull(resource);
         assertEquals(savedFileName.toString(), resource.getFilename());
         assertEquals(resource.getFile().toPath(), expectedFilePath);
+    }
+    @Test
+    @DisplayName("get file when it doesn't exist in DB")
+    public void getFileWhenItDoesNotExistInDB(){
+        Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
+        UUID uuid = UUID.randomUUID();
+        Mockito.when(fileRepository.findById(any())).thenReturn(Optional.empty());
+        var actualException = assertThrows(FileNotFoundException.class, ()->fileService.getFile(uuid));
+        assertEquals(HttpStatus.BAD_REQUEST, actualException.getHttpStatus());
+        Mockito.verify(fileRepository, Mockito.only()).findById(uuid);
     }
 }
