@@ -47,7 +47,7 @@ class FileServiceTest {
     private ExtensionResolver extensionResolver;
     @InjectMocks
     private FileService fileService;
-    private Path path = Files.createTempDirectory("socialMediaTmpDir");
+    private final Path path = Files.createTempDirectory("socialMediaTmpDir");
 
     FileServiceTest() throws IOException {
     }
