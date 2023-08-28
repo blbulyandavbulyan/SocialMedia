@@ -5,6 +5,7 @@ import com.blbulyandavbulyan.socialmedia.dtos.publications.PublicationRequest;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.Publication;
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.publications.YouAreNotOwnThisPublicationException;
 import com.blbulyandavbulyan.socialmedia.repositories.PublicationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class PublicationService {
     public void delete(Long publicationId, String publisherName) {
         if(publicationRepository.existsById(publicationId)){
             if(publicationRepository.deleteByIdAndAuthorUsername(publicationId, publisherName) == 0)
-                throw new RuntimeException();
+                throw new YouAreNotOwnThisPublicationException("You can't delete this publication, because you don't own it");
         }
         else throw new RuntimeException();
     }
