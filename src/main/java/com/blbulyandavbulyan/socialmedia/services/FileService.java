@@ -3,7 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
-import com.blbulyandavbulyan.socialmedia.exceptions.EmptyFileException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.EmptyFileException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import lombok.AllArgsConstructor;
