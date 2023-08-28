@@ -25,4 +25,11 @@ public class PublicationService {
         return new PublicationCreatedResponse(publication.getId(), publication.getPublicationDate());
     }
 
+    public void delete(Long publicationId, String publisherName) {
+        if(publicationRepository.existsById(publicationId)){
+            if(publicationRepository.deleteByIdAndAuthorUsername(publicationId, publisherName) == 0)
+                throw new RuntimeException();
+        }
+        else throw new RuntimeException();
+    }
 }
