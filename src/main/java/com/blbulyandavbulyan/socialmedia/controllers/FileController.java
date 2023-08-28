@@ -4,10 +4,7 @@ import com.blbulyandavbulyan.socialmedia.dtos.FileCreatedResponse;
 import com.blbulyandavbulyan.socialmedia.services.FileService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +20,8 @@ public class FileController {
     private FileService fileService;
 
     @PostMapping
-    public FileCreatedResponse uploadFile(MultipartFile multipartFile, Principal principal){
+    @ResponseStatus(HttpStatus.CREATED)
+    public FileCreatedResponse uploadFile(@RequestParam("file") MultipartFile multipartFile, Principal principal){
         return new FileCreatedResponse(fileService.save(multipartFile, principal.getName()));
     }
     @GetMapping("/{file-uuid}")
