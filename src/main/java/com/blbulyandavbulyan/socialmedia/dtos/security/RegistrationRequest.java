@@ -1,4 +1,4 @@
-package com.blbulyandavbulyan.socialmedia.dtos;
+package com.blbulyandavbulyan.socialmedia.dtos.security;
 
 import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidRawPassword;
 import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserEmail;

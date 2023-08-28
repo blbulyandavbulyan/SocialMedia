@@ -1,8 +1,8 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
-import com.blbulyandavbulyan.socialmedia.dtos.AuthorizationRequest;
-import com.blbulyandavbulyan.socialmedia.dtos.JwtTokenResponse;
-import com.blbulyandavbulyan.socialmedia.dtos.RegistrationRequest;
+import com.blbulyandavbulyan.socialmedia.dtos.security.AuthorizationRequest;
+import com.blbulyandavbulyan.socialmedia.dtos.security.JwtTokenResponse;
+import com.blbulyandavbulyan.socialmedia.dtos.security.RegistrationRequest;
 import com.blbulyandavbulyan.socialmedia.services.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;

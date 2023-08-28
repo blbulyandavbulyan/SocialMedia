@@ -1,7 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
-import com.blbulyandavbulyan.socialmedia.dtos.AuthorizationRequest;
-import com.blbulyandavbulyan.socialmedia.dtos.RegistrationRequest;
+import com.blbulyandavbulyan.socialmedia.dtos.security.AuthorizationRequest;
+import com.blbulyandavbulyan.socialmedia.dtos.security.RegistrationRequest;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import com.blbulyandavbulyan.socialmedia.services.AuthService;
@@ -9,7 +9,6 @@ import com.epages.restdocs.apispec.ResourceSnippetDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -22,7 +21,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;

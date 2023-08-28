@@ -1,4 +1,4 @@
-package com.blbulyandavbulyan.socialmedia.dtos;
+package com.blbulyandavbulyan.socialmedia.dtos.security;
 
 import jakarta.validation.constraints.NotBlank;
 
