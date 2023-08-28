@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -107,5 +109,15 @@ class FileServiceTest {
         assertThrows(UploadedFileHasInvalidExtensionException.class, ()->fileService.save(mockMultipartFile, publisherName));
         Mockito.verify(fileRepository, Mockito.never()).save(any());
         Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
+    }
+    @Test
+    @DisplayName("find all by id")
+    public void findAllById(){
+        List<File> expected = new ArrayList<>();
+        List<UUID> filesUUIDs = new ArrayList<>();
+        Mockito.when(fileRepository.findAllById(filesUUIDs)).thenReturn(expected);
+        var actual = fileService.findAllById(filesUUIDs);
+        Mockito.verify(fileRepository, Mockito.only()).findAllById(filesUUIDs);
+        assertSame(expected, actual);
     }
 }
