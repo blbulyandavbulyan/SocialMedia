@@ -42,7 +42,7 @@ public class PublicationServiceTest {
         Long publicationId = 1L;
         String publisherName = "david";
         Mockito.when(publicationRepository.existsById(publicationId)).thenReturn(true);
-        Mockito.when(publicationRepository.deleteByIdAndAuthorUsername(publicationId, publisherName)).thenReturn(1L);
+        Mockito.when(publicationRepository.deleteByIdAndAuthorUsername(publicationId, publisherName)).thenReturn(0L);
         assertThrows(YouAreNotOwnThisPublicationException.class, ()->publicationService.delete(publicationId, publisherName));
         Mockito.verify(publicationRepository, Mockito.times(1)).existsById(publicationId);
         Mockito.verify(publicationRepository, Mockito.times(1)).deleteByIdAndAuthorUsername(publicationId, publisherName);
