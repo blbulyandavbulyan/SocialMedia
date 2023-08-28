@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -46,6 +47,10 @@ public class FileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<File> findAllById(List<UUID> filesUUIDs) {
+        return fileRepository.findAllById(filesUUIDs);
     }
 
     public record FoundFile(String fileName, String contentType, Resource resource) {
