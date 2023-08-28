@@ -4,7 +4,6 @@ import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
-import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +31,7 @@ class FileServiceTest {
     @Mock
     private FileRepository fileRepository;
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
     @Mock
     private ExtensionResolver extensionResolver;
     @InjectMocks
@@ -57,7 +56,7 @@ class FileServiceTest {
         Mockito.when(multipartFile.getInputStream()).thenReturn(this.getClass().getResourceAsStream("/testimages/test_image.jpg"));
         Mockito.when(fileConfigurationProperties.isValidMimeType(contentType)).thenReturn(true);
         Mockito.when(fileConfigurationProperties.isValidExtension(".jpg")).thenReturn(true);
-        Mockito.when(userRepository.findById(publisherName)).thenReturn(Optional.of(user));
+        Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(user));
         Mockito.when(extensionResolver.getFileExtension(originalFileName)).thenReturn(Optional.of(".jpg"));
         UUID savedFileUUID = fileService.save(multipartFile, publisherName);
         assertNotNull(savedFileUUID);

@@ -4,7 +4,6 @@ import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
-import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +25,12 @@ import java.util.UUID;
 public class FileService {
     private FileConfigurationProperties fileConfigurationProperties;
     private FileRepository fileRepository;
-    private UserRepository userRepository;
+    private UserService userService;
     private ExtensionResolver extensionResolver;
 
     @Transactional
     public UUID save(MultipartFile multipartFile, String publisherName) {
-        User uploader = userRepository.findById(publisherName).orElseThrow();
+        User uploader = userService.findByUserName(publisherName).orElseThrow();
         if(multipartFile.isEmpty())
             throw new RuntimeException();
         if(!fileConfigurationProperties.isValidMimeType(multipartFile.getContentType()))
