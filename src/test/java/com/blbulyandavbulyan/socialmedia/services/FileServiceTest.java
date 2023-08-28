@@ -4,6 +4,7 @@ import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.files.EmptyFileException;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.InvalidUploadedFileMimeTypeException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import org.junit.jupiter.api.DisplayName;
@@ -79,6 +80,17 @@ class FileServiceTest {
         assertThrows(EmptyFileException.class, ()->fileService.save(mockMultipartFile, publisherName));
         Mockito.verify(fileRepository, Mockito.never()).save(any());
         Mockito.verify(userService, Mockito.only()).findByUserName(publisherName);
+        Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
+    }
+    @Test
+    @DisplayName("save file with invalid mime type")
+    public void saveFileWithInvalidMimeType(){
+        String mimeType = "image/jpeg";
+        String publisherName = "testuser";
+        Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(new User()));
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.img", mimeType, new byte[]{2, 3, 4, 5, 6});
+        assertThrows(InvalidUploadedFileMimeTypeException.class, ()->fileService.save(mockMultipartFile, publisherName));
+        Mockito.verify(fileConfigurationProperties, Mockito.times(1)).isValidMimeType(mimeType);
         Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
     }
 }
