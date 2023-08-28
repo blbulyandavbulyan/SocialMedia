@@ -167,4 +167,18 @@ class FileServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, actualException.getHttpStatus());
         Mockito.verify(fileRepository, Mockito.only()).findById(uuid);
     }
+    @Test
+    @DisplayName("get file when exists in db but not exists in the file system")
+    public void getFileWhenExistsInDataBaseButNotExistsInFileSystem(){
+        String fileName = "reallycoolimage.jpg";
+        String fileExtension = ".jpg";
+        String contentType = "image/jpeg";
+        UUID savedFileName = UUID.randomUUID();
+        com.blbulyandavbulyan.socialmedia.entites.File file = new File(savedFileName, new User(), fileName, fileExtension, contentType);
+        Mockito.when(fileRepository.findById(savedFileName)).thenReturn(Optional.of(file));
+        Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
+        var actualException = assertThrows(FileNotFoundException.class, ()->fileService.getFile(savedFileName));
+        assertEquals(HttpStatus.BAD_REQUEST, actualException.getHttpStatus());
+        Mockito.verify(fileRepository, Mockito.only()).findById(savedFileName);
+    }
 }
