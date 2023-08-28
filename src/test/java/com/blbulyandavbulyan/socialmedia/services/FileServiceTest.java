@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.configs.FileConfigurationProperties;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.EmptyFileException;
 import com.blbulyandavbulyan.socialmedia.repositories.FileRepository;
 import com.blbulyandavbulyan.socialmedia.utils.ExtensionResolver;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,15 +15,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
@@ -70,5 +74,17 @@ class FileServiceTest {
         assertEquals(".jpg", savedFile.getFileExtension());
         Path filePath = path.resolve(savedFile.getSavedFileName().toString());
         Files.exists(filePath);
+    }
+    @Test
+    @DisplayName("save empty file")
+    public void saveEmptyFile() throws IOException {
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("uploadedFile", InputStream.nullInputStream());
+        String publisherName = "testuser";
+        Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(new User()));
+        assertThrows(EmptyFileException.class, ()->fileService.save(mockMultipartFile, publisherName));
+        Mockito.verify(mockMultipartFile, Mockito.only()).isEmpty();
+        Mockito.verify(fileRepository, Mockito.never()).save(any());
+        Mockito.verify(userService, Mockito.only()).findByUserName(publisherName);
+        Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
     }
 }
