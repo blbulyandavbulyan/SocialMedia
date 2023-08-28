@@ -63,11 +63,15 @@ public class FileService {
     public FoundFile getFile(UUID fileUIID) {
         try {
             Resource resource = new UrlResource(fileConfigurationProperties.getPath().resolve(fileUIID.toString()).toUri());
-            return fileRepository.findById(fileUIID)
+            FoundFile foundFile = fileRepository.findById(fileUIID)
                     .map((file) -> new FoundFile(file.getRealFileName(), file.getMimeType(), resource))
-                    .orElseThrow(()->new FileNotFoundException("File with " + fileUIID + " not found!"));
+                    .orElseThrow(() -> new FileNotFoundException("File with " + fileUIID + " not found!"));
+            if(!resource.exists()){
+                log.error("File with UUID '" + fileUIID +"' exists in DB but not found in file system!");
+                throw new FileNotFoundException("File with " + fileUIID + " not found!");
+            }
+            return foundFile;
         } catch (MalformedURLException e) {
-            log.error("File with UUID '" + fileUIID +"' exists in DB but not found in file system!");
             throw new RuntimeException(e);
         }
     }
