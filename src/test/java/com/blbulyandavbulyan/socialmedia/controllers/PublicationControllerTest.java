@@ -75,7 +75,7 @@ public class PublicationControllerTest {
                                 ),
                                 responseFields(
                                         fieldWithPath("publicationId").type(JsonFieldType.NUMBER).description("Id of new publication"),
-                                        fieldWithPath("creationDate").type(JsonFieldType.STRING).description("Creation date and time")
+                                        fieldWithPath("publicationDate").type(JsonFieldType.STRING).description("Creation date and time")
                                 )
                         )
                 );
