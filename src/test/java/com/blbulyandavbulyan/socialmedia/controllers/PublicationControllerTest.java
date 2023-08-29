@@ -1,12 +1,15 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
 import com.blbulyandavbulyan.socialmedia.dtos.publications.PublicationRequest;
+import com.blbulyandavbulyan.socialmedia.entites.Publication;
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.repositories.PublicationRepository;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import com.blbulyandavbulyan.socialmedia.services.FileService;
 import com.blbulyandavbulyan.socialmedia.services.PublicationService;
 import com.blbulyandavbulyan.socialmedia.utils.JWTTokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
@@ -25,8 +28,11 @@ import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,11 +53,17 @@ public class PublicationControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PublicationRepository publicationRepository;
+    private final String fakeUserName = "david";
+    private User fakeUser;
+    @PostConstruct
+    public void init() {
+        fakeUser = userRepository.save(new User(fakeUserName, "3dfdsfsdfs13", "dadfafew@gmail.com"));
+    }
 
     @Test
     void normalCreatePublication() throws Exception {
-        String fakeUserName = "david";
-        userRepository.save(new User(fakeUserName, "3dfdsfsdfs13", "dadfafew@gmail.com"));
         PublicationRequest publicationRequest = new PublicationRequest("test publication", "very longlong text", List.of());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + jwtTokenUtils.generateToken(fakeUserName, List.of()));
@@ -77,5 +89,23 @@ public class PublicationControllerTest {
                 );
 
         Mockito.verify(publicationService, Mockito.only()).create(publicationRequest, fakeUserName);
+    }
+
+    @Test
+    void normalDeletePublication() throws Exception {
+        Long publicationForDelete = publicationRepository.save(new Publication("Blablabla", "Test text", fakeUser, List.of())).getId();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwtTokenUtils.generateToken(fakeUserName, List.of()));
+        mockMvc.perform(delete("/api/v1/publications/{publicationId}", publicationForDelete).headers(headers))
+                .andExpect(status().isOk())
+                .andDo(
+                        document(
+                                "normal-delete-publication",
+                                resourceDetails().description("Delete publication").tag("publication"),
+                                pathParameters(parameterWithName("publicationId").description("Id of publication to delete"))
+                        )
+                );
+        Mockito.verify(publicationService, Mockito.only()).delete(publicationForDelete, fakeUserName);
+        assertFalse(publicationRepository.existsById(publicationForDelete));
     }
 }
