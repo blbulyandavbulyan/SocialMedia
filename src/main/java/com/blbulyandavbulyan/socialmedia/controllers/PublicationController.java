@@ -4,6 +4,7 @@ import com.blbulyandavbulyan.socialmedia.dtos.publications.PublicationCreatedRes
 import com.blbulyandavbulyan.socialmedia.dtos.publications.PublicationRequest;
 import com.blbulyandavbulyan.socialmedia.services.PublicationService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,15 +16,15 @@ import java.security.Principal;
 public class PublicationController {
     private PublicationService publicationService;
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public PublicationCreatedResponse create(@Validated @RequestBody PublicationRequest publicationRequest, Principal principal){
         return publicationService.create(publicationRequest, principal.getName());
     }
     @DeleteMapping("/{publicationId}")
-    public void delete(@PathVariable String publicationId, Principal principal){
-
+    public void delete(@PathVariable Long publicationId, Principal principal){
+        publicationService.delete(publicationId, principal.getName());
     }
     @PutMapping("/{publicationId}")
-    public void update(@PathVariable String publicationId, @Validated @RequestBody PublicationRequest publicationRequest, Principal principal){
-
+    public void update(@PathVariable Long publicationId, @Validated @RequestBody PublicationRequest publicationRequest, Principal principal){
     }
 }
