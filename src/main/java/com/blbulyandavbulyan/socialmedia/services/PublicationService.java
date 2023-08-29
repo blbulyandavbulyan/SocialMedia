@@ -5,6 +5,7 @@ import com.blbulyandavbulyan.socialmedia.dtos.publications.PublicationRequest;
 import com.blbulyandavbulyan.socialmedia.entites.File;
 import com.blbulyandavbulyan.socialmedia.entites.Publication;
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.publications.PublicationNotFoundException;
 import com.blbulyandavbulyan.socialmedia.exceptions.publications.YouAreNotOwnThisPublicationException;
 import com.blbulyandavbulyan.socialmedia.repositories.PublicationRepository;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,6 @@ public class PublicationService {
             if(publicationRepository.deleteByIdAndAuthorUsername(publicationId, publisherName) == 0)
                 throw new YouAreNotOwnThisPublicationException("You can't delete this publication, because you don't own it");
         }
-        else throw new RuntimeException();
+        else throw new PublicationNotFoundException("Publication with id " + publicationId + " not found!");
     }
 }
