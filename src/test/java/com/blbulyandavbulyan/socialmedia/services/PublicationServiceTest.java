@@ -1,5 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
+import com.blbulyandavbulyan.socialmedia.exceptions.publications.PublicationNotFoundException;
 import com.blbulyandavbulyan.socialmedia.exceptions.publications.YouAreNotOwnThisPublicationException;
 import com.blbulyandavbulyan.socialmedia.repositories.PublicationRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -46,5 +47,13 @@ public class PublicationServiceTest {
         assertThrows(YouAreNotOwnThisPublicationException.class, ()->publicationService.delete(publicationId, publisherName));
         Mockito.verify(publicationRepository, Mockito.times(1)).existsById(publicationId);
         Mockito.verify(publicationRepository, Mockito.times(1)).deleteByIdAndAuthorUsername(publicationId, publisherName);
+    }
+    @Test
+    @DisplayName("delete publication when it doesn't exists")
+    public void deletePublicationWhenDoesNotExist() {
+        Long publicationId = 1L;
+        Mockito.when(publicationRepository.existsById(publicationId)).thenReturn(false);
+        assertThrows(PublicationNotFoundException.class, ()->publicationService.delete(publicationId, "testpublisher"));
+        Mockito.verify(publicationRepository, Mockito.only()).existsById(publicationId);
     }
 }
