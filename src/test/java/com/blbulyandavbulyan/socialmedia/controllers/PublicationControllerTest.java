@@ -121,7 +121,8 @@ public class PublicationControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andDo(
                         document(
-                                "create-publication-if-you-not-authorized", resourceDetails().description("Attempt to create publication, if you not authorized").tag("publication")
+                                "create-publication-if-you-not-authorized",
+                                resourceDetails().description("Attempt to create publication, if you not authorized").tag("publication")
                         )
                 );
     }
