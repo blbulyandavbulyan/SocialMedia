@@ -7,7 +7,6 @@ import com.blbulyandavbulyan.socialmedia.services.FileService;
 import com.blbulyandavbulyan.socialmedia.services.PublicationService;
 import com.blbulyandavbulyan.socialmedia.utils.JWTTokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
@@ -48,9 +47,6 @@ public class PublicationControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private UserRepository userRepository;
-    private void init() {
-
-    }
 
     @Test
     void normalCreatePublication() throws Exception {
