@@ -10,6 +10,7 @@ import com.blbulyandavbulyan.socialmedia.exceptions.publications.YouAreNotOwnThi
 import com.blbulyandavbulyan.socialmedia.repositories.PublicationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class PublicationService {
         publicationRepository.save(publication);
         return new PublicationCreatedResponse(publication.getId(), publication.getPublicationDate());
     }
-
+    @Transactional
     public void delete(Long publicationId, String publisherName) {
         if(publicationRepository.existsById(publicationId)){
             if(publicationRepository.deleteByIdAndAuthorUsername(publicationId, publisherName) == 0)
