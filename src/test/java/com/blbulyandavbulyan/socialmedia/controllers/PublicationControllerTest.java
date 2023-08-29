@@ -8,6 +8,7 @@ import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import com.blbulyandavbulyan.socialmedia.services.FileService;
 import com.blbulyandavbulyan.socialmedia.services.PublicationService;
 import com.blbulyandavbulyan.socialmedia.utils.JWTTokenUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,7 @@ public class PublicationControllerTest {
     private PublicationRepository publicationRepository;
     private final String fakeUserName = "david";
     private User fakeUser;
+
     @PostConstruct
     public void init() {
         fakeUser = userRepository.save(new User(fakeUserName, "3dfdsfsdfs13", "dadfafew@gmail.com"));
@@ -107,5 +109,20 @@ public class PublicationControllerTest {
                 );
         Mockito.verify(publicationService, Mockito.only()).delete(publicationForDelete, fakeUserName);
         assertFalse(publicationRepository.existsById(publicationForDelete));
+    }
+
+    @Test
+    void createPublicationIfYouNotAuthorized() throws Exception {
+        PublicationRequest publicationRequest = new PublicationRequest("test publication", "very longlong text", List.of());
+        mockMvc.perform(post("/api/v1/publications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(publicationRequest))
+                )
+                .andExpect(status().isUnauthorized())
+                .andDo(
+                        document(
+                                "create-publication-if-you-not-authorized", resourceDetails().description("Attempt to create publication, if you not authorized").tag("publication")
+                        )
+                );
     }
 }
