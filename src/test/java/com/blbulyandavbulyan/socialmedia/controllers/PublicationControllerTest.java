@@ -32,6 +32,7 @@ import java.util.List;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -145,5 +146,7 @@ public class PublicationControllerTest {
                                 deletePathParameters
                         )
                 );
+        Mockito.verify(publicationService, Mockito.only()).delete(publicationForDelete, fakeUserName);
+        assertTrue(publicationRepository.existsById(publicationForDelete));
     }
 }
