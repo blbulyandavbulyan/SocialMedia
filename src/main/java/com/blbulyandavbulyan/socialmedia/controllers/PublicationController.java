@@ -1,5 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
+import com.blbulyandavbulyan.socialmedia.annotations.validation.publications.ValidPublicationText;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.publications.ValidPublicationTitle;
 import com.blbulyandavbulyan.socialmedia.dtos.publications.PublicationCreatedResponse;
 import com.blbulyandavbulyan.socialmedia.dtos.publications.PublicationRequest;
 import com.blbulyandavbulyan.socialmedia.services.PublicationService;
@@ -26,5 +28,13 @@ public class PublicationController {
     }
     @PutMapping("/{publicationId}")
     public void update(@PathVariable Long publicationId, @Validated @RequestBody PublicationRequest publicationRequest, Principal principal){
+    }
+    @PatchMapping("/{publicationId}/title")
+    public void updateTitle(@PathVariable String publicationId, @ValidPublicationTitle String title){
+
+    }
+    @PatchMapping("/{publicationId}/text")
+    public void updateText(@PathVariable String publicationId, @ValidPublicationText String text){
+
     }
 }
