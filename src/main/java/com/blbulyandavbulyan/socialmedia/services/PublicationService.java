@@ -35,4 +35,12 @@ public class PublicationService {
         }
         else throw new PublicationNotFoundException("Publication with id " + publicationId + " not found!");
     }
+    public void updateText(Long publicationId, String text){
+        if(publicationRepository.updateTextById(publicationId, text) == 0)
+            throw new PublicationNotFoundException("Publication with id " + publicationId + " not found!");
+    }
+    public void updateTitle(Long publicationId, String title){
+        if(publicationRepository.updateTitleById(publicationId, title) == 0)
+            throw new PublicationNotFoundException("Publication with id " + publicationId + " not found!");
+    }
 }
