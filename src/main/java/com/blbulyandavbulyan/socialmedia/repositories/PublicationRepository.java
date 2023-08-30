@@ -13,11 +13,11 @@ public interface PublicationRepository extends JpaRepository<Publication, Long> 
     @Transactional
     @Modifying
     @Query("update Publication p set p.text = :text where p.id = :id")
-    int updateTextById(@Param("text") String text, @Param("id") Long id);
+    int updateTextById(@Param("id") Long id, @Param("text") String text);
 
     @Transactional
     @Modifying
     @Query("update Publication p set p.title = :title where p.id = :id")
-    int updateTitleById(@Param("title") String title, @Param("id") Long id);
+    int updateTitleById(@Param("id") Long id, @Param("title") String title);
 
 }
