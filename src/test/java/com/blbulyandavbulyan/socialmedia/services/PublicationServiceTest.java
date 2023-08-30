@@ -109,4 +109,21 @@ public class PublicationServiceTest {
         assertEquals(expectedPublicationId, actualResult.publicationId());
         assertEquals(expectedPublicationDate, actualResult.publicationDate());
     }
+
+    @Test
+    public void updateTitleWhenPublicationExists() {
+        Long id = 1L;
+        String title = "Новое название";
+        Mockito.when(publicationRepository.updateTitleById(id, title)).thenReturn(1);
+        publicationService.updateTitle(id, title);
+        Mockito.verify(publicationRepository, Mockito.only()).updateTitleById(id, title);
+    }
+    @Test
+    public void updateTextWhenPublicationExists(){
+        Long id = 1L;
+        String text = "Новый текст";
+        Mockito.when(publicationRepository.updateTextById(id, text)).thenReturn(1);
+        publicationService.updateText(id, text);
+        Mockito.verify(publicationRepository, Mockito.only()).updateTextById(id, text);
+    }
 }
