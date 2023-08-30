@@ -1,7 +1,8 @@
 package com.blbulyandavbulyan.socialmedia.entites;
 
+import com.blbulyandavbulyan.socialmedia.annotations.validation.publications.ValidPublicationText;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.publications.ValidPublicationTitle;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,10 +21,10 @@ public class Publication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "publication_id")
     private Long id;
-    @NotBlank
+    @ValidPublicationTitle
     @Column(name = "title", nullable = false)
     private String title;
-    @NotBlank
+    @ValidPublicationText
     @Column(name = "text", nullable = false, columnDefinition = "TEXT")
     private String text;
     @ManyToOne
