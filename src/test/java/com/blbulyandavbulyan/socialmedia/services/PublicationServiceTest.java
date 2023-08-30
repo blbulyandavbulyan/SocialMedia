@@ -126,4 +126,20 @@ public class PublicationServiceTest {
         publicationService.updateText(id, text);
         Mockito.verify(publicationRepository, Mockito.only()).updateTextById(id, text);
     }
+    @Test
+    public void updateTitleWhenPublicationNotExits(){
+        Long id = 1L;
+        String title = "Новое название";
+        Mockito.when(publicationRepository.updateTitleById(id, title)).thenReturn(0);
+        assertThrows(PublicationNotFoundException.class, ()->publicationService.updateTitle(id, title));
+        Mockito.verify(publicationRepository, Mockito.only()).updateTitleById(id, title);
+    }
+    @Test
+    public void updateTextWhenPublicationNotExist(){
+        Long id = 1L;
+        String text = "Новый текст";
+        Mockito.when(publicationRepository.updateTextById(id, text)).thenReturn(0);
+        assertThrows(PublicationNotFoundException.class, ()->publicationService.updateText(id, text));
+        Mockito.verify(publicationRepository, Mockito.only()).updateTextById(id, text);
+    }
 }
