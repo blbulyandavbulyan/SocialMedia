@@ -8,7 +8,7 @@ import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import com.blbulyandavbulyan.socialmedia.services.FileService;
 import com.blbulyandavbulyan.socialmedia.services.PublicationService;
 import com.blbulyandavbulyan.socialmedia.utils.JWTTokenUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.epages.restdocs.apispec.ResourceSnippetDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
@@ -23,6 +23,8 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
+import org.springframework.restdocs.request.PathParametersSnippet;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -30,13 +32,13 @@ import java.util.List;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
@@ -58,6 +60,14 @@ public class PublicationControllerTest {
     private PublicationRepository publicationRepository;
     private final String fakeUserName = "david";
     private User fakeUser;
+    private final ResourceSnippetDetails deleteResourceDetails = resourceDetails().description("Delete publication").tag("publication").summary("You can delete publication, if it exists and you authorized and own this publication");
+    private final PathParametersSnippet deletePathParameters = pathParameters(parameterWithName("publicationId").description("Id of publication to delete"));
+    private final ResourceSnippetDetails createResourceDetails = resourceDetails().description("Create publication").tag("publication");
+    private final RequestFieldsSnippet createPublicationRequestFields = requestFields(
+            fieldWithPath("title").type(JsonFieldType.STRING).description("Title of new publication"),
+            fieldWithPath("text").type(JsonFieldType.STRING).description("Text of new publication"),
+            fieldWithPath("filesUUIDs").type(JsonFieldType.ARRAY).description("Array of UUIDs of attached files")
+    );
 
     @PostConstruct
     public void init() {
@@ -77,12 +87,8 @@ public class PublicationControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(
-                        document("normal-creating-publication", resourceDetails().description("Create publication").tag("publication"),
-                                requestFields(
-                                        fieldWithPath("title").type(JsonFieldType.STRING).description("Title of new publication"),
-                                        fieldWithPath("text").type(JsonFieldType.STRING).description("Text of new publication"),
-                                        fieldWithPath("filesUUIDs").type(JsonFieldType.ARRAY).description("Array of UUIDs of attached files")
-                                ),
+                        document("normal-creating-publication", createResourceDetails,
+                                createPublicationRequestFields,
                                 responseFields(
                                         fieldWithPath("publicationId").type(JsonFieldType.NUMBER).description("Id of new publication"),
                                         fieldWithPath("publicationDate").type(JsonFieldType.STRING).description("Creation date and time")
@@ -91,6 +97,22 @@ public class PublicationControllerTest {
                 );
 
         Mockito.verify(publicationService, Mockito.only()).create(publicationRequest, fakeUserName);
+    }
+    @Test
+    void createPublicationIfYouNotAuthorized() throws Exception {
+        PublicationRequest publicationRequest = new PublicationRequest("test publication", "very longlong text", List.of());
+        mockMvc.perform(post("/api/v1/publications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(publicationRequest))
+                )
+                .andExpect(status().isUnauthorized())
+                .andDo(
+                        document(
+                                "create-publication-if-you-not-authorized",
+                                createResourceDetails,
+                                createPublicationRequestFields
+                        )
+                );
     }
 
     @Test
@@ -103,8 +125,8 @@ public class PublicationControllerTest {
                 .andDo(
                         document(
                                 "normal-delete-publication",
-                                resourceDetails().description("Delete publication").tag("publication"),
-                                pathParameters(parameterWithName("publicationId").description("Id of publication to delete"))
+                                deleteResourceDetails,
+                                deletePathParameters
                         )
                 );
         Mockito.verify(publicationService, Mockito.only()).delete(publicationForDelete, fakeUserName);
@@ -112,17 +134,15 @@ public class PublicationControllerTest {
     }
 
     @Test
-    void createPublicationIfYouNotAuthorized() throws Exception {
-        PublicationRequest publicationRequest = new PublicationRequest("test publication", "very longlong text", List.of());
-        mockMvc.perform(post("/api/v1/publications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(publicationRequest))
-                )
+    void deletePublicationIfYouDoNotAuthorized() throws Exception {
+        Long publicationForDelete = publicationRepository.save(new Publication("Blablabla", "Test text", fakeUser, List.of())).getId();
+        mockMvc.perform(delete("/api/v1/publications/{publicationId}", publicationForDelete))
                 .andExpect(status().isUnauthorized())
                 .andDo(
                         document(
-                                "create-publication-if-you-not-authorized",
-                                resourceDetails().description("Attempt to create publication, if you not authorized").tag("publication")
+                                "delete-publication-if-you-dont-own-it",
+                                deleteResourceDetails,
+                                deletePathParameters
                         )
                 );
     }
