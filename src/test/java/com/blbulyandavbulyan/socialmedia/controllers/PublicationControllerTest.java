@@ -31,15 +31,13 @@ import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
@@ -64,6 +62,7 @@ public class PublicationControllerTest {
     private final ResourceSnippetDetails deleteResourceDetails = resourceDetails().description("Delete publication").tag("publication").summary("You can delete publication, if it exists and you authorized and own this publication");
     private final PathParametersSnippet deletePathParameters = pathParameters(parameterWithName("publicationId").description("Id of publication to delete"));
     private final ResourceSnippetDetails createResourceDetails = resourceDetails().description("Create publication").tag("publication");
+    private final PathParametersSnippet pathParametersSnippetForUpdateMethods = pathParameters(parameterWithName("publicationId").description("Id of updating publication"));
     private final RequestFieldsSnippet createPublicationRequestFields = requestFields(
             fieldWithPath("title").type(JsonFieldType.STRING).description("Title of new publication"),
             fieldWithPath("text").type(JsonFieldType.STRING).description("Text of new publication"),
@@ -99,6 +98,7 @@ public class PublicationControllerTest {
 
         Mockito.verify(publicationService, Mockito.only()).create(publicationRequest, fakeUserName);
     }
+
     @Test
     void createPublicationIfYouNotAuthorized() throws Exception {
         PublicationRequest publicationRequest = new PublicationRequest("test publication", "very longlong text", List.of());
@@ -148,5 +148,50 @@ public class PublicationControllerTest {
                 );
         Mockito.verify(publicationService, Mockito.only()).delete(publicationForDelete, fakeUserName);
         assertTrue(publicationRepository.existsById(publicationForDelete));
+    }
+
+    @Test
+    void normalUpdateTitle() throws Exception {
+        Long publicationForUpdate = publicationRepository.save(new Publication("Blablabla", "Test text", fakeUser, List.of())).getId();
+        String newTitle = "New title";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwtTokenUtils.generateToken(fakeUserName, List.of()));
+        mockMvc.perform(
+                        patch("/api/v1/publications/{publicationId}/title", publicationForUpdate)
+                                .param("title", newTitle).headers(headers)
+                )
+                .andExpect(status().isOk())
+                .andDo(
+                        document("normal-update-title",
+                                resourceDetails().description("Update publication title").summary("You can update it if you own publication and it exists").tag("publication"),
+                                pathParametersSnippetForUpdateMethods,
+                                formParameters(parameterWithName("title").description("New title for publication"))
+                        )
+                );
+        Mockito.verify(publicationService, Mockito.only()).updateTitle(publicationForUpdate, newTitle);
+        assertEquals(newTitle, publicationRepository.findById(publicationForUpdate).get().getTitle());
+    }
+
+    @Test
+    void normalUpdateText() throws Exception {
+        Long publicationForUpdate = publicationRepository.save(new Publication("Blablabla", "Test text", fakeUser, List.of())).getId();
+        String newText = "New text";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwtTokenUtils.generateToken(fakeUserName, List.of()));
+        mockMvc.perform(
+                        patch("/api/v1/publications/{publicationId}/text", publicationForUpdate)
+                                .param("text", newText).headers(headers)
+                )
+                .andExpect(status().isOk())
+                .andDo(
+                        document(
+                                "normal-update-text",
+                                resourceDetails().tag("Update publication text").summary("You can update it if you own publication and it exists").tag("publication"),
+                                pathParametersSnippetForUpdateMethods,
+                                formParameters(parameterWithName("text").description("New text of publication"))
+                        )
+                );
+        Mockito.verify(publicationService, Mockito.only()).updateText(publicationForUpdate, newText);
+        assertEquals(newText, publicationRepository.findById(publicationForUpdate).get().getText());
     }
 }
