@@ -43,8 +43,12 @@ public class PublicationService {
         else
             throw new YouAreNotOwnThisPublicationException("You don't own this publication, operation is not allowed!");
     }
-    public void updateTitle(Long publicationId, String title){
-        if(publicationRepository.updateTitleById(publicationId, title) == 0)
-            throw new PublicationNotFoundException("Publication with id " + publicationId + " not found!");
+
+    public void updateTitle(Long publicationId, String title, String updaterName) {
+        String authorName = publicationRepository.findAuthorNameById(publicationId)
+                .orElseThrow(() -> new PublicationNotFoundException("Publication with id " + publicationId + " not found!"));
+        if (authorName.equals(updaterName)) publicationRepository.updateTitleById(publicationId, title);
+        else
+            throw new YouAreNotOwnThisPublicationException("You don't own this publication, operation is not allowed!");
     }
 }

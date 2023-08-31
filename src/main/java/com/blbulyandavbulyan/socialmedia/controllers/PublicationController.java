@@ -27,8 +27,8 @@ public class PublicationController {
         publicationService.delete(publicationId, principal.getName());
     }
     @PatchMapping("/{publicationId}/title")
-    public void updateTitle(@PathVariable Long publicationId, @ValidPublicationTitle String title){
-        publicationService.updateTitle(publicationId, title);
+    public void updateTitle(@PathVariable Long publicationId, @ValidPublicationTitle String title, Principal principal) {
+        publicationService.updateTitle(publicationId, title, principal.getName());
     }
     @PatchMapping("/{publicationId}/text")
     public void updateText(@PathVariable Long publicationId, @ValidPublicationText String text, Principal principal) {

@@ -114,18 +114,22 @@ public class PublicationServiceTest {
     public void normalUpdateTitle() {
         Long id = 1L;
         String title = "Новое название";
-        Mockito.when(publicationRepository.updateTitleById(id, title)).thenReturn(1);
-        publicationService.updateTitle(id, title);
-        Mockito.verify(publicationRepository, Mockito.only()).updateTitleById(id, title);
+        String updaterName = "david";
+        Mockito.when(publicationRepository.findAuthorNameById(id)).thenReturn(Optional.of(updaterName));
+        assertDoesNotThrow(() -> publicationService.updateTitle(id, title, updaterName));
+        Mockito.verify(publicationRepository, Mockito.times(1)).updateTitleById(id, title);
+        Mockito.verify(publicationRepository, Mockito.times(1)).findAuthorNameById(id);
+        Mockito.verifyNoMoreInteractions(publicationRepository);
     }
 
     @Test
     public void updateTitleWhenPublicationNotExits() {
         Long id = 1L;
         String title = "Новое название";
-        Mockito.when(publicationRepository.updateTitleById(id, title)).thenReturn(0);
-        assertThrows(PublicationNotFoundException.class, () -> publicationService.updateTitle(id, title));
-        Mockito.verify(publicationRepository, Mockito.only()).updateTitleById(id, title);
+        String updaterName = "david";
+        Mockito.when(publicationRepository.findAuthorNameById(id)).thenReturn(Optional.empty());
+        assertThrows(PublicationNotFoundException.class, () -> publicationService.updateTitle(id, title, updaterName));
+        Mockito.verify(publicationRepository, Mockito.only()).findAuthorNameById(id);
     }
     @Test
     public void normalUpdateText() {
