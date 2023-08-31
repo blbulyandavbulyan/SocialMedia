@@ -111,7 +111,7 @@ public class PublicationServiceTest {
     }
 
     @Test
-    public void updateTitleWhenPublicationExists() {
+    public void normalUpdateTitle() {
         Long id = 1L;
         String title = "Новое название";
         Mockito.when(publicationRepository.updateTitleById(id, title)).thenReturn(1);
@@ -128,7 +128,7 @@ public class PublicationServiceTest {
         Mockito.verify(publicationRepository, Mockito.only()).updateTitleById(id, title);
     }
     @Test
-    public void updateTextWhenPublicationExists(){
+    public void normalUpdateText() {
         Long id = 1L;
         String text = "Новый текст";
         String updaterName = "testuser";
