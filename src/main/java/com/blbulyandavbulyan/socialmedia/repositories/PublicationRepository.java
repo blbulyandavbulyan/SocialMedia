@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface PublicationRepository extends JpaRepository<Publication, Long> {
     long deleteByIdAndAuthorUsername(Long id, String username);
 
@@ -20,4 +22,6 @@ public interface PublicationRepository extends JpaRepository<Publication, Long> 
     @Query("update Publication p set p.title = :title where p.id = :id")
     int updateTitleById(@Param("id") Long id, @Param("title") String title);
 
+    @Query("select p.author.username from Publication p where p.id = :id")
+    Optional<String> findAuthorNameById(Long id);
 }

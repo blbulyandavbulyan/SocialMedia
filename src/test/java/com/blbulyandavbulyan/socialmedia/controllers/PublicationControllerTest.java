@@ -191,7 +191,7 @@ public class PublicationControllerTest {
                                 formParameters(parameterWithName("text").description("New text of publication"))
                         )
                 );
-        Mockito.verify(publicationService, Mockito.only()).updateText(publicationForUpdate, newText);
+        Mockito.verify(publicationService, Mockito.only()).updateText(publicationForUpdate, newText, fakeUserName);
         assertEquals(newText, publicationRepository.findById(publicationForUpdate).get().getText());
     }
 }

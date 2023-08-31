@@ -122,9 +122,11 @@ public class PublicationServiceTest {
     public void updateTextWhenPublicationExists(){
         Long id = 1L;
         String text = "Новый текст";
-        Mockito.when(publicationRepository.updateTextById(id, text)).thenReturn(1);
-        publicationService.updateText(id, text);
-        Mockito.verify(publicationRepository, Mockito.only()).updateTextById(id, text);
+        String updaterName = "testuser";
+        Mockito.when(publicationRepository.findAuthorNameById(id)).thenReturn(Optional.of(updaterName));
+        assertDoesNotThrow(() -> publicationService.updateText(id, text, updaterName));
+        Mockito.verify(publicationRepository, Mockito.times(1)).findAuthorNameById(id);
+        Mockito.verify(publicationRepository, Mockito.times(1)).updateTextById(id, text);
     }
     @Test
     public void updateTitleWhenPublicationNotExits(){
@@ -138,8 +140,10 @@ public class PublicationServiceTest {
     public void updateTextWhenPublicationNotExist(){
         Long id = 1L;
         String text = "Новый текст";
-        Mockito.when(publicationRepository.updateTextById(id, text)).thenReturn(0);
-        assertThrows(PublicationNotFoundException.class, ()->publicationService.updateText(id, text));
-        Mockito.verify(publicationRepository, Mockito.only()).updateTextById(id, text);
+        String updaterName = "testuser";
+        Mockito.when(publicationRepository.findAuthorNameById(id)).thenReturn(Optional.empty());
+        assertThrows(PublicationNotFoundException.class, () -> publicationService.updateText(id, text, updaterName));
+        Mockito.verify(publicationRepository, Mockito.never()).updateTextById(id, text);
+        Mockito.verify(publicationRepository, Mockito.times(1)).findAuthorNameById(id);
     }
 }
