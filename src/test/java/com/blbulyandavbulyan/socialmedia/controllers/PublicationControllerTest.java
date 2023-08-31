@@ -153,6 +153,25 @@ public class PublicationControllerTest {
     }
 
     @Test
+    void deletePublicationIfYouDoNotOwnIt() throws Exception {
+        Long publicationForDelete = publicationRepository.save(new Publication("Blablabla", "Test text", fakeUser, List.of())).getId();
+        String deleterName = "unknowndeleter";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwtTokenUtils.generateToken(deleterName, List.of()));
+        mockMvc.perform(delete("/api/v1/publications/{publicationId}", publicationForDelete).headers(headers))
+                .andExpect(status().isForbidden())
+                .andDo(
+                        document(
+                                "delete-publication-if-you-dont-own-it",
+                                deleteResourceDetails,
+                                deletePathParameters
+                        )
+                );
+        Mockito.verify(publicationService, Mockito.only()).delete(publicationForDelete, deleterName);
+        assertTrue(publicationRepository.existsById(publicationForDelete));
+    }
+
+    @Test
     void normalUpdateTitle() throws Exception {
         Long publicationForUpdate = publicationRepository.save(new Publication("Blablabla", "Test text", fakeUser, List.of())).getId();
         String newTitle = "New title";
