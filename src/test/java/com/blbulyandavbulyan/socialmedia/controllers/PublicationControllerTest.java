@@ -241,4 +241,25 @@ public class PublicationControllerTest {
         Mockito.verify(publicationRepository, Mockito.never()).updateTextById(eq(publicationForUpdate), any());
         assertEquals(oldText, publicationRepository.findById(publicationForUpdate).get().getText());
     }
+
+    @Test
+    void updateTextWhenYouNotAuthorized() throws Exception {
+        String oldText = "Test text";
+        String newText = "New text";
+        Long publicationForUpdate = publicationRepository.save(new Publication("Blablabla", oldText, fakeUser, List.of())).getId();
+        mockMvc.perform(
+                        patch("/api/v1/publications/{publicationId}/text", publicationForUpdate)
+                                .param("text", newText)
+                )
+                .andExpect(status().isUnauthorized())
+                .andDo(
+                        document(
+                                "update-text-if-you-not-authorized",
+                                resourceDetails().tag("Update publication text").summary("You can update it if you own publication and it exists").tag("publication"),
+                                pathParametersSnippetForUpdateMethods,
+                                formParameters(parameterWithName("text").description("New text of publication"))
+                        )
+                );
+        Mockito.verify(publicationService, Mockito.never()).updateText(any(), any(), any());
+    }
 }
