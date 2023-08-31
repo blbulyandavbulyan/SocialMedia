@@ -32,6 +32,8 @@ import java.util.List;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -55,7 +57,7 @@ public class PublicationControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
+    @SpyBean
     private PublicationRepository publicationRepository;
     private final String fakeUserName = "david";
     private User fakeUser;
@@ -193,5 +195,31 @@ public class PublicationControllerTest {
                 );
         Mockito.verify(publicationService, Mockito.only()).updateText(publicationForUpdate, newText, fakeUserName);
         assertEquals(newText, publicationRepository.findById(publicationForUpdate).get().getText());
+    }
+
+    @Test
+    void updateTextWhenYouDoNotOwnThisPublication() throws Exception {
+        String oldText = "Test text";
+        Long publicationForUpdate = publicationRepository.save(new Publication("Blablabla", oldText, fakeUser, List.of())).getId();
+        String updaterName = "strangetestname";
+        String newText = "New text";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwtTokenUtils.generateToken(updaterName, List.of()));
+        mockMvc.perform(
+                        patch("/api/v1/publications/{publicationId}/text", publicationForUpdate)
+                                .param("text", newText).headers(headers)
+                )
+                .andExpect(status().isForbidden())
+                .andDo(
+                        document(
+                                "normal-update-text",
+                                resourceDetails().tag("Update publication text").summary("You can update it if you own publication and it exists").tag("publication"),
+                                pathParametersSnippetForUpdateMethods,
+                                formParameters(parameterWithName("text").description("New text of publication"))
+                        )
+                );
+        Mockito.verify(publicationService, Mockito.only()).updateText(publicationForUpdate, newText, updaterName);
+        Mockito.verify(publicationRepository, Mockito.never()).updateTextById(eq(publicationForUpdate), any());
+        assertEquals(oldText, publicationRepository.findById(publicationForUpdate).get().getText());
     }
 }
