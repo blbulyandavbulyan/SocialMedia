@@ -28,9 +28,9 @@ public class PublicationService {
         return new PublicationCreatedResponse(publication.getId(), publication.getPublicationDate());
     }
     @Transactional
-    public void delete(Long publicationId, String publisherName) {
+    public void delete(Long publicationId, String deleterName) {
         if(publicationRepository.existsById(publicationId)){
-            if(publicationRepository.deleteByIdAndAuthorUsername(publicationId, publisherName) == 0)
+            if (publicationRepository.deleteByIdAndAuthorUsername(publicationId, deleterName) == 0)
                 throw new YouAreNotOwnThisPublicationException("You can't delete this publication, because you don't own it");
         }
         else throw new PublicationNotFoundException("Publication with id " + publicationId + " not found!");
