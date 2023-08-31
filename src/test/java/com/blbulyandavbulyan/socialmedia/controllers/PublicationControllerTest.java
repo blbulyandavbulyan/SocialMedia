@@ -212,7 +212,7 @@ public class PublicationControllerTest {
                 .andExpect(status().isForbidden())
                 .andDo(
                         document(
-                                "normal-update-text",
+                                "update-text-if-you-not-authorized",
                                 resourceDetails().tag("Update publication text").summary("You can update it if you own publication and it exists").tag("publication"),
                                 pathParametersSnippetForUpdateMethods,
                                 formParameters(parameterWithName("text").description("New text of publication"))
