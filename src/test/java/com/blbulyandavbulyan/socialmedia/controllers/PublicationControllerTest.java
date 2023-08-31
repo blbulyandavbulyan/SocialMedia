@@ -143,7 +143,7 @@ public class PublicationControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andDo(
                         document(
-                                "delete-publication-if-you-dont-own-it",
+                                "delete-publication-if-you-not-authorized",
                                 deleteResourceDetails,
                                 deletePathParameters
                         )
