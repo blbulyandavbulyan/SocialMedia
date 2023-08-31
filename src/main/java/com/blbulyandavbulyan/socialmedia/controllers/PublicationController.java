@@ -32,7 +32,6 @@ public class PublicationController {
     }
     @PatchMapping("/{publicationId}/text")
     public void updateText(@PathVariable Long publicationId, @ValidPublicationText String text, Principal principal) {
-        // TODO: 30.08.2023 сделать так, чтобы обновлять текст публикации могли только владельцы
         publicationService.updateText(publicationId, text, principal.getName());
     }
 }
