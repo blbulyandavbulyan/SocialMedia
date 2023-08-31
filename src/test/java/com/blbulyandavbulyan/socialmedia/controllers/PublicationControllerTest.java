@@ -148,7 +148,7 @@ public class PublicationControllerTest {
                                 deletePathParameters
                         )
                 );
-        Mockito.verify(publicationService, Mockito.only()).delete(publicationForDelete, fakeUserName);
+        Mockito.verify(publicationService, Mockito.never()).delete(publicationForDelete, fakeUserName);
         assertTrue(publicationRepository.existsById(publicationForDelete));
     }
 
