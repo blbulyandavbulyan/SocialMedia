@@ -12,7 +12,7 @@ public class SubscriptionService {
     private SubscriptionRepository subscriptionRepository;
 
     public boolean isFirstSubscriberForSecond(String first, String second) {
-        return subscriptionRepository.existsBySubscriberUsernameAndTargetUsername(first, second);
+        return subscriptionRepository.existsById(new SubscriptionPK(first, second));
     }
 
     public void markSubscriptionAsViewed(String subscriber, String target) {
