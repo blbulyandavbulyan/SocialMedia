@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionAlreadyExistsException;
+import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionNotFoundException;
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,6 +77,15 @@ class SubscriptionServiceTest {
         String target = "evgeney";
         Mockito.when(subscriptionRepository.updateViewedBySubscriberAndTargetUsername(true, subscriber, target)).thenReturn(1);
         assertDoesNotThrow(() -> underTest.markSubscriptionAsViewed(subscriber, target));
+        Mockito.verify(subscriptionRepository, Mockito.only()).updateViewedBySubscriberAndTargetUsername(true, subscriber, target);
+    }
+
+    @Test
+    void markSubscriptionAsViewedIfItNotExists() {
+        String subscriber = "anatoly";
+        String target = "evgeney";
+        Mockito.when(subscriptionRepository.updateViewedBySubscriberAndTargetUsername(true, subscriber, target)).thenReturn(0);
+        assertThrows(SubscriptionNotFoundException.class, () -> underTest.markSubscriptionAsViewed(subscriber, target));
         Mockito.verify(subscriptionRepository, Mockito.only()).updateViewedBySubscriberAndTargetUsername(true, subscriber, target);
     }
 }
