@@ -24,4 +24,9 @@ public class SubscriptionController {
     public void unsubscribe(@ValidUserName String target, Principal principal) {
         subscriptionService.unsubscribe(principal.getName(), target);
     }
+
+    @PatchMapping
+    public void markSubscriptionAsViewed(@ValidUserName String target, Principal principal) {
+        subscriptionService.markSubscriptionAsViewed(principal.getName(), target);
+    }
 }
