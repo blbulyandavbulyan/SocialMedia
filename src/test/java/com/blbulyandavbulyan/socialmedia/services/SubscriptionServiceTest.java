@@ -1,9 +1,12 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
+import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
+import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionAlreadyExistsException;
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -41,5 +44,29 @@ class SubscriptionServiceTest {
         String target = "testtarget";
         assertDoesNotThrow(() -> underTest.unsubscribe(subscriber, target));
         Mockito.verify(subscriptionRepository, Mockito.only()).deleteById(new SubscriptionPK(subscriber, target));
+    }
+
+    @Test
+    void createWhenSubscriptionDoesNotExist() {
+        String subscriber = "andrey";
+        String target = "david";
+        Mockito.when(subscriptionRepository.existsById(new SubscriptionPK(subscriber, target))).thenReturn(false);
+        assertDoesNotThrow(() -> underTest.create(subscriber, target));
+        Mockito.verify(subscriptionRepository, Mockito.times(1)).existsById(new SubscriptionPK(subscriber, target));
+        ArgumentCaptor<Subscription> subscriptionArgumentCaptor = ArgumentCaptor.forClass(Subscription.class);
+        Mockito.verify(subscriptionRepository, Mockito.times(1)).save(subscriptionArgumentCaptor.capture());
+        Subscription actualSubscription = subscriptionArgumentCaptor.getValue();
+        assertEquals(subscriber, actualSubscription.getSubscriberUsername());
+        assertEquals(target, actualSubscription.getTargetUsername());
+    }
+
+    @Test
+    void createSubscriptionWhenItAlreadyExists() {
+        String subscriber = "andrey";
+        String target = "david";
+        SubscriptionPK id = new SubscriptionPK(subscriber, target);
+        Mockito.when(subscriptionRepository.existsById(id)).thenReturn(true);
+        assertThrows(SubscriptionAlreadyExistsException.class, () -> underTest.create(subscriber, target));
+        Mockito.verify(subscriptionRepository, Mockito.only()).existsById(id);
     }
 }
