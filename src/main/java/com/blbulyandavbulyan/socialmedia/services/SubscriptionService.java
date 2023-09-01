@@ -24,8 +24,8 @@ public class SubscriptionService {
         return subscriptionRepository.existsBySubscriberUsernameAndTargetUsername(first, second);
     }
 
-    public void markSubscriptionAsViewed(String friendshipAcceptor, String friendshipSender) {
-        if (subscriptionRepository.updateViewedBySubscriberAndTargetUsername(true, friendshipSender, friendshipAcceptor) < 1)
+    public void markSubscriptionAsViewed(String subscriber, String target) {
+        if (subscriptionRepository.updateViewedBySubscriberAndTargetUsername(true, subscriber, target) < 1)
             throw new RuntimeException();// TODO: 01.09.2023 Бросить исключение говорящее о том, что такого запроса не было
     }
 
