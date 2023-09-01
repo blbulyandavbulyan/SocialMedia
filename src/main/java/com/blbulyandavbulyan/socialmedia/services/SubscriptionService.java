@@ -37,4 +37,8 @@ public class SubscriptionService {
             subscriptionRepository.save(subscription);
         else throw new RuntimeException();
     }
+
+    public void unsubscribe(String subscriber, String target) {
+        subscriptionRepository.deleteById(new SubscriptionPK(subscriber, target));
+    }
 }
