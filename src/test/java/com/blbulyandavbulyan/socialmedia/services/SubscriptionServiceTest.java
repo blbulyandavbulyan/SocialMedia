@@ -69,4 +69,13 @@ class SubscriptionServiceTest {
         assertThrows(SubscriptionAlreadyExistsException.class, () -> underTest.create(subscriber, target));
         Mockito.verify(subscriptionRepository, Mockito.only()).existsById(id);
     }
+
+    @Test
+    void markSubscriptionAsViewedIfItExists() {
+        String subscriber = "anatoly";
+        String target = "evgeney";
+        Mockito.when(subscriptionRepository.updateViewedBySubscriberAndTargetUsername(true, subscriber, target)).thenReturn(1);
+        assertDoesNotThrow(() -> underTest.markSubscriptionAsViewed(subscriber, target));
+        Mockito.verify(subscriptionRepository, Mockito.only()).updateViewedBySubscriberAndTargetUsername(true, subscriber, target);
+    }
 }
