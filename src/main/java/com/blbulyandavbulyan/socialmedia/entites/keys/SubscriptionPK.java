@@ -1,9 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.entites.keys;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -11,6 +8,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class SubscriptionPK implements Serializable {
     private String subscriberUsername;
     private String targetUsername;
