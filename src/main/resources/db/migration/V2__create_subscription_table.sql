@@ -2,6 +2,7 @@ CREATE TABLE subscriptions
 (
     subscriber_username VARCHAR(50) NOT NULL,
     target_username     VARCHAR(50) NOT NULL,
+    creation_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     viewed              BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (subscriber_username, target_username),
     FOREIGN KEY (subscriber_username) REFERENCES users (username),
