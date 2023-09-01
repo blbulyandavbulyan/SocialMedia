@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionAlreadyExistsException;
+import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionNotFoundException;
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class SubscriptionService {
 
     public void markSubscriptionAsViewed(String subscriber, String target) {
         if (subscriptionRepository.updateViewedBySubscriberAndTargetUsername(true, subscriber, target) < 1)
-            throw new RuntimeException();// TODO: 01.09.2023 Бросить исключение говорящее о том, что такого запроса не было
+            throw new SubscriptionNotFoundException("The subscription from " + subscriber + " to " + target + " not found!");
     }
 
     public void create(String subscriber, String target) {
