@@ -17,7 +17,7 @@ public class SubscriptionController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void subscribe(@ValidUserName String target, Principal principal) {
-        subscriptionService.subscribe(principal.getName(), target);
+        subscriptionService.create(principal.getName(), target);
     }
 
     @DeleteMapping
