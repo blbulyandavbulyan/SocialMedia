@@ -2,6 +2,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
+import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionAlreadyExistsException;
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class SubscriptionService {
         subscription.setTargetUsername(target);
         if (!subscriptionRepository.existsById(new SubscriptionPK(subscriber, target)))
             subscriptionRepository.save(subscription);
-        else throw new RuntimeException();
+        else throw new SubscriptionAlreadyExistsException("You are already subscribed on " + target);
     }
 
     public void unsubscribe(String subscriber, String target) {
