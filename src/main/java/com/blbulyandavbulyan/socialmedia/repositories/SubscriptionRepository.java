@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, SubscriptionPK> {
-    boolean existsBySubscriberUsernameAndTargetUsername(String subscriberName, String targetUsername);
 
     @Transactional
     @Modifying
