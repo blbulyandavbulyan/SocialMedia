@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 public class SubscriptionService {
     private SubscriptionRepository subscriptionRepository;
 
-    public void makeSubscription(String friendshipSender, String friendShipAcceptor) {
+    public void subscribe(String subscriber, String target) {
         Subscription subscription = new Subscription();
-        subscription.setSubscriberUsername(friendshipSender);
-        subscription.setTargetUsername(friendShipAcceptor);
-        if (!subscriptionRepository.existsBySubscriberUsernameAndTargetUsername(friendshipSender, friendShipAcceptor))
+        subscription.setSubscriberUsername(subscriber);
+        subscription.setTargetUsername(target);
+        if (!subscriptionRepository.existsBySubscriberUsernameAndTargetUsername(subscriber, target))
             subscriptionRepository.save(subscription);
         else throw new RuntimeException();
     }
