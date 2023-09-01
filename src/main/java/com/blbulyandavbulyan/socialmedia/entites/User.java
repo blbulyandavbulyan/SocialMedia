@@ -2,10 +2,7 @@ package com.blbulyandavbulyan.socialmedia.entites;
 
 import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserEmail;
 import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -16,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -34,7 +32,15 @@ public class User implements UserDetails {
     @ValidUserEmail
     @Column(nullable = false)
     private String email;
-
+    @ManyToMany
+    @JoinTable(
+            name = "subscriptions",
+            joinColumns = @JoinColumn(name = "subscriber_username"),
+            inverseJoinColumns = @JoinColumn(name = "target_username")
+    )
+    private Set<User> subscriptions;
+    @ManyToMany(mappedBy = "subscriptions")
+    private Set<User> subscribers;
     public User(String username, String password, String email) {
         this.username = username;
         this.password = password;
