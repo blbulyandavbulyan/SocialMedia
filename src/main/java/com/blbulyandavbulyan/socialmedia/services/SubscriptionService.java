@@ -11,15 +11,6 @@ import org.springframework.stereotype.Service;
 public class SubscriptionService {
     private SubscriptionRepository subscriptionRepository;
 
-    public void subscribe(String subscriber, String target) {
-        Subscription subscription = new Subscription();
-        subscription.setSubscriberUsername(subscriber);
-        subscription.setTargetUsername(target);
-        if (!subscriptionRepository.existsBySubscriberUsernameAndTargetUsername(subscriber, target))
-            subscriptionRepository.save(subscription);
-        else throw new RuntimeException();
-    }
-
     public boolean isFirstSubscriberForSecond(String first, String second) {
         return subscriptionRepository.existsBySubscriberUsernameAndTargetUsername(first, second);
     }
