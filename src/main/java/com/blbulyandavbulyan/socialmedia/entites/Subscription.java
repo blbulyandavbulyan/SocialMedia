@@ -21,7 +21,7 @@ public class Subscription {
     private String subscriberUsername;
     @Id
     @ValidUserName
-    @Column(name = "target_user_name", nullable = false)
+    @Column(name = "target_username", nullable = false)
     private String targetUsername;
     @CreationTimestamp
     @Column(name = "creation_date", nullable = false)
