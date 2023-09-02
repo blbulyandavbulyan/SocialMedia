@@ -2,6 +2,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
+import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.AttemptToSubscribeForYourselfException;
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionAlreadyExistsException;
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionNotFoundException;
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
@@ -14,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceTest {
@@ -69,6 +71,15 @@ class SubscriptionServiceTest {
         Mockito.when(subscriptionRepository.existsById(id)).thenReturn(true);
         assertThrows(SubscriptionAlreadyExistsException.class, () -> underTest.create(subscriber, target));
         Mockito.verify(subscriptionRepository, Mockito.only()).existsById(id);
+    }
+
+    @Test
+    void createSubscriptionForYourself() {
+        String subscriberAndTarget = "david";
+        SubscriptionPK id = new SubscriptionPK(subscriberAndTarget, subscriberAndTarget);
+        Mockito.when(subscriptionRepository.existsById(id)).thenReturn(false);
+        assertThrows(AttemptToSubscribeForYourselfException.class, () -> underTest.create(subscriberAndTarget, subscriberAndTarget));
+        Mockito.verify(subscriptionRepository, Mockito.never()).save(any());
     }
 
     @Test
