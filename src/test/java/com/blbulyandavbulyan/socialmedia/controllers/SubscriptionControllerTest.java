@@ -9,6 +9,7 @@ import com.blbulyandavbulyan.socialmedia.services.SubscriptionService;
 import com.blbulyandavbulyan.socialmedia.testutils.AuthorizationUtils;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,17 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.formParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +51,7 @@ class SubscriptionControllerTest {
     private User user2;
 
     private final ParameterDescriptor targetFormParameterSnippet = parameterWithName("target").description("Target username");
+    private HttpHeaders httpHeaders;
 
     @PostConstruct
     public void init() {
@@ -60,9 +64,14 @@ class SubscriptionControllerTest {
         subscriptionRepository.deleteAll();
     }
 
+    @BeforeEach
+    void setUp() {
+        httpHeaders = authorizationUtils.generateHeaders(user1.getUsername(), user1.getAuthorities());
+    }
+
     @Test
     void normalCreateSubscription() throws Exception {
-        mockMvc.perform(post(apiPath).headers(authorizationUtils.generateHeaders(user1.getUsername(), user1.getAuthorities())).param("target", user2.getUsername()))
+        mockMvc.perform(post(apiPath).headers(httpHeaders).param("target", user2.getUsername()))
                 .andExpect(status().isCreated())
                 .andDo(
                         document("normal-create-subscription",
@@ -77,7 +86,7 @@ class SubscriptionControllerTest {
     @Test
     void normalDeleteSubscription() throws Exception {
         subscriptionRepository.save(new Subscription(user1.getUsername(), user2.getUsername()));
-        mockMvc.perform(delete(apiPath).headers(authorizationUtils.generateHeaders(user1.getUsername(), user1.getAuthorities())).param("target", user2.getUsername()))
+        mockMvc.perform(delete(apiPath).headers(httpHeaders).param("target", user2.getUsername()))
                 .andExpect(status().isOk())
                 .andDo(
                         document("normal-delete-subscription",
