@@ -97,4 +97,20 @@ class SubscriptionControllerTest {
         Mockito.verify(subscriptionService, Mockito.only()).unsubscribe(user1.getUsername(), user2.getUsername());
         assertFalse(subscriptionRepository.existsById(new SubscriptionPK(user1.getUsername(), user2.getUsername())));
     }
+
+    @Test
+    void normalMarkSubscriptionAsViewed() throws Exception {
+        subscriptionRepository.save(new Subscription(user1.getUsername(), user2.getUsername()));
+        mockMvc.perform(patch(apiPath).headers(httpHeaders).param("target", user2.getUsername()))
+                .andExpect(status().isOk())
+                .andDo(document(
+                        "normal-mark-subscription-as-viewed",
+                        resourceDetails().description("Mark subscription as viewed").tag("subscription"),
+                        formParameters(targetFormParameterSnippet)
+                ));
+        Mockito.verify(subscriptionService, Mockito.only()).markSubscriptionAsViewed(user1.getUsername(), user2.getUsername());
+        Optional<Subscription> subscription = subscriptionRepository.findById(new SubscriptionPK(user1.getUsername(), user2.getUsername()));
+        assertTrue(subscription.isPresent());
+        assertTrue(subscription.get().getViewed());
+    }
 }
