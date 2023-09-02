@@ -2,6 +2,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
+import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.AttemptToSubscribeForYourselfException;
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionAlreadyExistsException;
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionNotFoundException;
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
@@ -23,6 +24,8 @@ public class SubscriptionService {
     }
 
     public void create(String subscriber, String target) {
+        if (subscriber.equals(target))
+            throw new AttemptToSubscribeForYourselfException("You can't subscribe for yourself!");
         Subscription subscription = new Subscription();
         subscription.setSubscriberUsername(subscriber);
         subscription.setTargetUsername(target);
