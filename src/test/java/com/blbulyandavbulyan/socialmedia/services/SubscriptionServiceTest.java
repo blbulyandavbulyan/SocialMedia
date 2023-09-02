@@ -76,8 +76,6 @@ class SubscriptionServiceTest {
     @Test
     void createSubscriptionForYourself() {
         String subscriberAndTarget = "david";
-        SubscriptionPK id = new SubscriptionPK(subscriberAndTarget, subscriberAndTarget);
-        Mockito.when(subscriptionRepository.existsById(id)).thenReturn(false);
         assertThrows(AttemptToSubscribeForYourselfException.class, () -> underTest.create(subscriberAndTarget, subscriberAndTarget));
         Mockito.verify(subscriptionRepository, Mockito.never()).save(any());
     }
