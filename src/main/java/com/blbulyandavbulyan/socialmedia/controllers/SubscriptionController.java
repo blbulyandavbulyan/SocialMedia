@@ -16,17 +16,17 @@ public class SubscriptionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void subscribe(@ValidUserName String target, Principal principal) {
+    public void subscribe(@ValidUserName @RequestParam("target") String target, Principal principal) {
         subscriptionService.create(principal.getName(), target);
     }
 
     @DeleteMapping
-    public void unsubscribe(@ValidUserName String target, Principal principal) {
+    public void unsubscribe(@ValidUserName @RequestParam("target") String target, Principal principal) {
         subscriptionService.unsubscribe(principal.getName(), target);
     }
 
     @PatchMapping
-    public void markSubscriptionAsViewed(@ValidUserName String target, Principal principal) {
+    public void markSubscriptionAsViewed(@ValidUserName @RequestParam("target") String target, Principal principal) {
         subscriptionService.markSubscriptionAsViewed(principal.getName(), target);
     }
 }
