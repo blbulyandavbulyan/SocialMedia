@@ -2,6 +2,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
+import com.blbulyandavbulyan.socialmedia.exceptions.messages.MessageNotFoundException;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.YouAreNotReceiverOfThisMessage;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
@@ -32,7 +33,8 @@ public class MessageService {
     }
 
     public void markMessageAsRead(String receiverUserName, Long messageId) {
-        String realReceiverUsername = messageRepository.findReceiverUsernameById(messageId).orElseThrow();// TODO: 02.09.2023 бросить исключение если такого сообщения нет
+        String realReceiverUsername = messageRepository.findReceiverUsernameById(messageId)
+                .orElseThrow(() -> new MessageNotFoundException("Message with id" + messageId + " not found!"));// TODO: 02.09.2023 бросить исключение если такого сообщения нет
         if (realReceiverUsername.equals(receiverUserName)) {
             messageRepository.updateReadById(messageId, true);
         } else
