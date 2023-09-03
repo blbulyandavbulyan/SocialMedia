@@ -1,10 +1,13 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
+import com.blbulyandavbulyan.socialmedia.entites.Message;
+import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -13,8 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,5 +52,27 @@ class MessageServiceTest {
         assertThrows(SendingMessageToNonFriendException.class, () -> underTest.sendMessage(senderName, receiverName, "test"));
         Mockito.verify(iFriendService, Mockito.only()).areTheyFriends(senderName, receiverName);
         Mockito.verify(messageRepository, Mockito.never()).save(any());
+    }
+
+    @Test
+    void normalSendMessage() {
+        String senderName = "david";
+        String receiverName = "andrey";
+        Mockito.when(iFriendService.areTheyFriends(senderName, receiverName)).thenReturn(true);
+        User expectedSender = new User();
+        expectedSender.setUsername(senderName);
+        User expectedReceiver = new User();
+        String expectedText = "test tesxtwe da";
+        expectedReceiver.setUsername(receiverName);
+        Mockito.when(userService.findByUserName(senderName)).thenReturn(Optional.of(expectedSender));
+        Mockito.when(userService.findByUserName(receiverName)).thenReturn(Optional.of(expectedReceiver));
+        assertDoesNotThrow(() -> underTest.sendMessage(senderName, receiverName, expectedText));
+        ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
+        Mockito.verify(messageRepository, Mockito.only()).save(messageArgumentCaptor.capture());
+        Mockito.verify(iFriendService, Mockito.only()).areTheyFriends(senderName, receiverName);
+        Message actualMessage = messageArgumentCaptor.getValue();
+        assertEquals(expectedText, actualMessage.getText());
+        assertEquals(expectedSender, actualMessage.getSender());
+        assertEquals(expectedReceiver, actualMessage.getReceiver());
     }
 }
