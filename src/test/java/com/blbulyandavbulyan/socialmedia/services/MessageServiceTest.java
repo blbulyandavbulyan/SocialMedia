@@ -1,6 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
+import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class MessageServiceTest {
@@ -35,5 +38,15 @@ class MessageServiceTest {
         Page<MessageResponse> actualPage = underTest.getMessageForReceiver(receiverName, senderName, pageable);
         assertSame(expectedPage, actualPage);
         Mockito.verify(messageRepository, Mockito.only()).findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(receiverName, senderName, pageable);
+    }
+
+    @Test
+    void sendMessageShouldThrowExceptionIfUsersAreNotFriends() {
+        String receiverName = "david";
+        String senderName = "andrey";
+        Mockito.when(iFriendService.areTheyFriends(senderName, receiverName)).thenReturn(false);
+        assertThrows(SendingMessageToNonFriendException.class, () -> underTest.sendMessage(senderName, receiverName, "test"));
+        Mockito.verify(iFriendService, Mockito.only()).areTheyFriends(senderName, receiverName);
+        Mockito.verify(messageRepository, Mockito.never()).save(any());
     }
 }
