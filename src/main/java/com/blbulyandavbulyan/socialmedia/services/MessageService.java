@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
+import com.blbulyandavbulyan.socialmedia.exceptions.messages.YouAreNotReceiverOfThisMessage;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,9 +32,10 @@ public class MessageService {
     }
 
     public void markMessageAsRead(String receiverUserName, Long messageId) {
-        // TODO: 02.09.2023 бросить исключение если такого сообщения нет
-        // TODO: 02.09.2023 бросить исключение если пытается пометить прочитанным не отправитель
-        if (messageRepository.updateReadById(messageId, true) < 1)
-            throw new RuntimeException();
+        String realReceiverUsername = messageRepository.findReceiverUsernameById(messageId).orElseThrow();// TODO: 02.09.2023 бросить исключение если такого сообщения нет
+        if (realReceiverUsername.equals(receiverUserName)) {
+            messageRepository.updateReadById(messageId, true);
+        } else
+            throw new YouAreNotReceiverOfThisMessage("You can't change read status, because you are not receiver of this message");// TODO: 02.09.2023 бросить исключение если пытается пометить прочитанным не получатель
     }
 }
