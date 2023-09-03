@@ -2,6 +2,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
+import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class MessageService {
             Message message = new Message(userService.findByUserName(senderName).orElseThrow(), userService.findByUserName(receiverName).orElseThrow(), text);
             messageRepository.save(message);
         } else
-            throw new RuntimeException();// TODO: 02.09.2023 Выбросить исключение о том что сообщениями обмениваться могут только друзья
+            throw new SendingMessageToNonFriendException("You can send messages only to friends!");// TODO: 02.09.2023 Выбросить исключение о том что сообщениями обмениваться могут только друзья
     }
 
     public void markMessageAsRead(String receiverUserName, Long messageId) {
