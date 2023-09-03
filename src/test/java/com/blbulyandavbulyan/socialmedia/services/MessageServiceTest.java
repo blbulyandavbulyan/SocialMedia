@@ -85,4 +85,14 @@ class MessageServiceTest {
         assertThrows(YouAreNotReceiverOfThisMessage.class, () -> underTest.markMessageAsRead(receiverUsername, messageId));
         Mockito.verify(messageRepository, Mockito.only()).findReceiverUsernameById(messageId);
     }
+
+    @Test
+    void normalMarkMessageAsRead() {
+        String receiverUsername = "david";
+        Long messageId = 1L;
+        Mockito.when(messageRepository.findReceiverUsernameById(messageId)).thenReturn(Optional.of(receiverUsername));
+        assertDoesNotThrow(() -> underTest.markMessageAsRead(receiverUsername, messageId));
+        Mockito.verify(messageRepository, Mockito.times(1)).findReceiverUsernameById(messageId);
+        Mockito.verify(messageRepository, Mockito.times(1)).updateReadById(messageId, true);
+    }
 }
