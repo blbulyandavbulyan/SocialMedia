@@ -1,15 +1,11 @@
 package com.blbulyandavbulyan.socialmedia.dtos.messages;
 
-import lombok.Getter;
-import lombok.Setter;
+public interface MessageResponse {
+    Long getId();
 
-import java.time.Instant;
+    String getText();
 
-@Getter
-@Setter
-public class MessageResponse {
-    private Long id;
-    private String text;
-    private boolean read;
-    private Instant sendingDate;
+    boolean isRead();
+
+    java.time.Instant getSendingDate();
 }
