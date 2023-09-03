@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface MessageRepository extends JpaRepository<Message, Long> {
     Page<MessageResponse> findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(String receiverName, String senderName, Pageable pageable);
 
@@ -17,4 +19,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Modifying
     @Query("update Message m set m.read = :read where m.id = :id")
     int updateReadById(@Param("id") Long id, @Param("read") boolean read);
+
+    @Query("select m.receiver.username from Message m where m.id = :id")
+    Optional<String> findReceiverUsernameById(@Param("id") Long id);
 }
