@@ -4,6 +4,7 @@ import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
+import com.blbulyandavbulyan.socialmedia.exceptions.messages.YouAreNotReceiverOfThisMessage;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,5 +75,14 @@ class MessageServiceTest {
         assertEquals(expectedText, actualMessage.getText());
         assertEquals(expectedSender, actualMessage.getSender());
         assertEquals(expectedReceiver, actualMessage.getReceiver());
+    }
+
+    @Test
+    void markMessageAsReadShouldThrowExceptionIfUserIsNotItsReceiver() {
+        String receiverUsername = "david";
+        Long messageId = 1L;
+        Mockito.when(messageRepository.findReceiverUsernameById(messageId)).thenReturn(Optional.of("anatoly"));
+        assertThrows(YouAreNotReceiverOfThisMessage.class, () -> underTest.markMessageAsRead(receiverUsername, messageId));
+        Mockito.verify(messageRepository, Mockito.only()).findReceiverUsernameById(messageId);
     }
 }
