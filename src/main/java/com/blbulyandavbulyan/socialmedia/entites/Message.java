@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.entites;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -12,6 +13,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "messages")
+@NoArgsConstructor
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +33,10 @@ public class Message {
     private Instant sendingDate;
     @Column(name = "read", nullable = false)
     private boolean read;
+
+    public Message(User sender, User receiver, String text) {
+        this.text = text;
+        this.sender = sender;
+        this.receiver = receiver;
+    }
 }
