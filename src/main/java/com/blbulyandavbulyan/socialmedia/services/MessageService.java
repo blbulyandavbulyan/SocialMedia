@@ -5,6 +5,7 @@ import com.blbulyandavbulyan.socialmedia.entites.Message;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.MessageNotFoundException;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.YouAreNotReceiverOfThisMessage;
+import com.blbulyandavbulyan.socialmedia.exceptions.user.UserNotFoundException;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,9 +25,11 @@ public class MessageService {
 
     public void sendMessage(String senderName, String receiverName, String text) {
         if (iFriendService.areTheyFriends(senderName, receiverName)) {
-            // TODO: 02.09.2023 Выбросить исключение о том что отправитель не найден
-            // TODO: 02.09.2023 Выбросить исключение о том что получатель не найден
-            Message message = new Message(userService.findByUserName(senderName).orElseThrow(), userService.findByUserName(receiverName).orElseThrow(), text);
+            Message message = new Message(
+                    userService.findByUserName(senderName).orElseThrow(() -> new UserNotFoundException("User with name " + senderName + " not found!")),
+                    userService.findByUserName(receiverName).orElseThrow(() -> new UserNotFoundException("User with name " + receiverName + " not found!")),
+                    text
+            );
             messageRepository.save(message);
         } else
             throw new SendingMessageToNonFriendException("You can send messages only to friends!");
