@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
 import com.blbulyandavbulyan.socialmedia.entites.User;
+import com.blbulyandavbulyan.socialmedia.exceptions.messages.MessageNotFoundException;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.SendingMessageToNonFriendException;
 import com.blbulyandavbulyan.socialmedia.exceptions.messages.YouAreNotReceiverOfThisMessage;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
@@ -94,5 +95,14 @@ class MessageServiceTest {
         assertDoesNotThrow(() -> underTest.markMessageAsRead(receiverUsername, messageId));
         Mockito.verify(messageRepository, Mockito.times(1)).findReceiverUsernameById(messageId);
         Mockito.verify(messageRepository, Mockito.times(1)).updateReadById(messageId, true);
+    }
+
+    @Test
+    void markMessageAsReadIfItDoesNotExists() {
+        String receiverUsername = "david";
+        Long messageId = 1L;
+        Mockito.when(messageRepository.findReceiverUsernameById(messageId)).thenReturn(Optional.empty());
+        assertThrows(MessageNotFoundException.class, () -> underTest.markMessageAsRead(receiverUsername, messageId));
+        Mockito.verify(messageRepository, Mockito.only()).findReceiverUsernameById(messageId);
     }
 }
