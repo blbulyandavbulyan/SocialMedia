@@ -27,7 +27,7 @@ public class MessageService {
             Message message = new Message(userService.findByUserName(senderName).orElseThrow(), userService.findByUserName(receiverName).orElseThrow(), text);
             messageRepository.save(message);
         } else
-            throw new SendingMessageToNonFriendException("You can send messages only to friends!");// TODO: 02.09.2023 Выбросить исключение о том что сообщениями обмениваться могут только друзья
+            throw new SendingMessageToNonFriendException("You can send messages only to friends!");
     }
 
     public void markMessageAsRead(String receiverUserName, Long messageId) {
