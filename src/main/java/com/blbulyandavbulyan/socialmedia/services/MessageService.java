@@ -34,10 +34,10 @@ public class MessageService {
 
     public void markMessageAsRead(String receiverUserName, Long messageId) {
         String realReceiverUsername = messageRepository.findReceiverUsernameById(messageId)
-                .orElseThrow(() -> new MessageNotFoundException("Message with id" + messageId + " not found!"));// TODO: 02.09.2023 бросить исключение если такого сообщения нет
+                .orElseThrow(() -> new MessageNotFoundException("Message with id" + messageId + " not found!"));
         if (realReceiverUsername.equals(receiverUserName)) {
             messageRepository.updateReadById(messageId, true);
         } else
-            throw new YouAreNotReceiverOfThisMessage("You can't change read status, because you are not receiver of this message");// TODO: 02.09.2023 бросить исключение если пытается пометить прочитанным не получатель
+            throw new YouAreNotReceiverOfThisMessage("You can't change read status, because you are not receiver of this message");
     }
 }
