@@ -1,5 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.dtos.messages;
 
+@SuppressWarnings("unused")
 public interface MessageResponse {
     Long getId();
 
