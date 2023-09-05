@@ -105,7 +105,7 @@ class MessagesControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(expectedContent)))
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedContent), true))
                 .andDo(
                         document("normal-get-messages",
                                 resourceDetails().description("Get messages between you and given user").tag("message"),
