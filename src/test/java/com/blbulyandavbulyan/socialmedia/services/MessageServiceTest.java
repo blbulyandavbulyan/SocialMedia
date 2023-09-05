@@ -42,10 +42,10 @@ class MessageServiceTest {
         String senderName = "andrey";
         Pageable pageable = PageRequest.of(1, 10);
         Page<MessageResponse> expectedPage = Mockito.mock(Page.class);
-        Mockito.when(messageRepository.findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(receiverName, senderName, pageable)).thenReturn(expectedPage);
+        Mockito.when(messageRepository.findByReceiverUsernameAndSenderUsernameOrSenderUsernameAndReceiverUsernameOrderBySendingDateDesc(receiverName, senderName, pageable)).thenReturn(expectedPage);
         Page<MessageResponse> actualPage = underTest.getMessageForReceiver(receiverName, senderName, pageable);
+        Mockito.verify(messageRepository, Mockito.only()).findByReceiverUsernameAndSenderUsernameOrSenderUsernameAndReceiverUsernameOrderBySendingDateDesc(receiverName, senderName, pageable);
         assertSame(expectedPage, actualPage);
-        Mockito.verify(messageRepository, Mockito.only()).findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(receiverName, senderName, pageable);
     }
 
     @Test
