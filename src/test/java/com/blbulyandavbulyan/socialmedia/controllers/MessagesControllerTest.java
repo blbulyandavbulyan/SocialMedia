@@ -120,6 +120,8 @@ class MessagesControllerTest {
                                         fieldWithPath("content[].text").type(JsonFieldType.STRING).description("Message text"),
                                         fieldWithPath("content[].read").type(JsonFieldType.BOOLEAN).description("This field indicates, was this message read or not"),
                                         fieldWithPath("content[].sendingDate").type(JsonFieldType.STRING).description("Message sending date and time"),
+                                        fieldWithPath("content[].senderUsername").type(JsonFieldType.STRING).description("Sender user name of this message"),
+                                        fieldWithPath("content[].receiverUsername").type(JsonFieldType.STRING).description("Receiver user name of this message"),
                                         fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("Total count of pages with this page size"),
                                         fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("Total count of messages, between you and given username"),
                                         fieldWithPath("pageSize").type(JsonFieldType.NUMBER).description("The given page size in the request"),
