@@ -33,14 +33,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -172,5 +172,20 @@ class MessagesControllerTest {
                         )
                 );
         Mockito.verify(messageService, Mockito.only()).sendMessage(user1.getUsername(), createMessageRequest.receiverName(), createMessageRequest.text());
+    }
+
+    @Test
+    void normalMarkMessageAsRead() throws Exception {
+        Long messageId = messageRepository.save(new Message(user2, user1, "Test text")).getId();
+        mockMvc.perform(patch(path + "/{messageId}", messageId).headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andDo(document("normal-mark-message-as-read",
+                        resourceDetails().description("Mark message as read").tag("message"),
+                        pathParameters(parameterWithName("messageId").description("Id of message, which will be marked as read"))
+                ));
+        Mockito.verify(messageService, Mockito.only()).markMessageAsRead(user1.getUsername(), messageId);
+        Optional<Message> actualMessage = messageRepository.findById(messageId);
+        assertTrue(actualMessage.isPresent());
+        assertTrue(actualMessage.get().isRead());
     }
 }
