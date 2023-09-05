@@ -23,14 +23,14 @@ public class MessageService {
         return messageRepository.findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(receiverName, senderName, pageable);
     }
 
-    public void sendMessage(String senderName, String receiverName, String text) {
+    public Message sendMessage(String senderName, String receiverName, String text) {
         if (iFriendService.areTheyFriends(senderName, receiverName)) {
             Message message = new Message(
                     userService.findByUserName(senderName).orElseThrow(() -> new UserNotFoundException("User with name " + senderName + " not found!")),
                     userService.findByUserName(receiverName).orElseThrow(() -> new UserNotFoundException("User with name " + receiverName + " not found!")),
                     text
             );
-            messageRepository.save(message);
+            return messageRepository.save(message);
         } else
             throw new SendingMessageToNonFriendException("You can send messages only to friends!");
     }

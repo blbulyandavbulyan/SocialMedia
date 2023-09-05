@@ -18,10 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
 
 @ExtendWith(MockitoExtension.class)
 class MessageServiceTest {
@@ -60,7 +62,15 @@ class MessageServiceTest {
     void normalSendMessage() {
         String senderName = "david";
         String receiverName = "andrey";
+        Long expectedId = 3232L;
+        Instant expectedSendingDate = Instant.now();
         Mockito.when(iFriendService.areTheyFriends(senderName, receiverName)).thenReturn(true);
+        Mockito.when(messageRepository.save(isA(Message.class))).then((invocation -> {
+            Message m = invocation.getArgument(0);
+            m.setSendingDate(expectedSendingDate);
+            m.setId(expectedId);
+            return m;
+        }));
         User expectedSender = new User();
         expectedSender.setUsername(senderName);
         User expectedReceiver = new User();
@@ -68,14 +78,21 @@ class MessageServiceTest {
         expectedReceiver.setUsername(receiverName);
         Mockito.when(userService.findByUserName(senderName)).thenReturn(Optional.of(expectedSender));
         Mockito.when(userService.findByUserName(receiverName)).thenReturn(Optional.of(expectedReceiver));
-        assertDoesNotThrow(() -> underTest.sendMessage(senderName, receiverName, expectedText));
+        Message sendMessageResult = underTest.sendMessage(senderName, receiverName, expectedText);
         ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
         Mockito.verify(messageRepository, Mockito.only()).save(messageArgumentCaptor.capture());
         Mockito.verify(iFriendService, Mockito.only()).areTheyFriends(senderName, receiverName);
-        Message actualMessage = messageArgumentCaptor.getValue();
-        assertEquals(expectedText, actualMessage.getText());
-        assertEquals(expectedSender, actualMessage.getSender());
-        assertEquals(expectedReceiver, actualMessage.getReceiver());
+        //проверка сохранённого сообщения
+        Message savingMessage = messageArgumentCaptor.getValue();
+        assertEquals(expectedText, savingMessage.getText());
+        assertEquals(expectedSender, savingMessage.getSender());
+        assertEquals(expectedReceiver, savingMessage.getReceiver());
+        //проверка сообщения, которое вернул нам метод отправки в качестве результата
+        assertEquals(expectedText, sendMessageResult.getText());
+        assertEquals(expectedSender, sendMessageResult.getSender());
+        assertEquals(expectedReceiver, sendMessageResult.getReceiver());
+        assertEquals(expectedId, sendMessageResult.getId());
+        assertEquals(expectedSendingDate, sendMessageResult.getSendingDate());
     }
 
     @Test
