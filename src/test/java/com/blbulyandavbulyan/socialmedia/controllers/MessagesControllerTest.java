@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -128,7 +129,7 @@ class MessagesControllerTest {
                                 )
                         )
                 );
-
+        Mockito.verify(messageService, Mockito.only()).getMessageForReceiver(user1.getUsername(), user2.getUsername(), PageRequest.of(pageNumber - 1, pageSize));
     }
 
     @Test
