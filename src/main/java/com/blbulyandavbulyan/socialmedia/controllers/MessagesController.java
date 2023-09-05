@@ -3,7 +3,9 @@ package com.blbulyandavbulyan.socialmedia.controllers;
 import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
 import com.blbulyandavbulyan.socialmedia.dtos.Page;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.CreateMessageRequest;
+import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageCreatedResponse;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
+import com.blbulyandavbulyan.socialmedia.entites.Message;
 import com.blbulyandavbulyan.socialmedia.services.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,8 +23,9 @@ public class MessagesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void sendMessage(@Validated @RequestBody CreateMessageRequest createMessageRequest, Principal principal) {
-        messageService.sendMessage(principal.getName(), createMessageRequest.receiverName(), createMessageRequest.text());
+    public MessageCreatedResponse sendMessage(@Validated @RequestBody CreateMessageRequest createMessageRequest, Principal principal) {
+        Message message = messageService.sendMessage(principal.getName(), createMessageRequest.receiverName(), createMessageRequest.text());
+        return new MessageCreatedResponse(message.getId(), createMessageRequest.receiverName(), message.getSendingDate());
     }
 
     @PatchMapping("/{messageId}")
