@@ -13,9 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    Page<MessageResponse> findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(String receiverName, String senderName, Pageable pageable);
-
-    Page<MessageResponse> findByReceiverUsernameAndSenderUsernameOrSenderUsernameAndReceiverUsernameOrderBySendingDateDesc(String first, String second, Pageable pageable);
+    @Query("""
+            SELECT m.id as id, m.receiver.username as receiverUsername, m.sender.username as senderUsername, m.text as text, m.sendingDate as sendingDate, m.read as read
+            FROM  Message m WHERE (m.sender.username = :firstUsername AND m.receiver.username = :secondUsername)
+             OR (m.sender.username = :secondUsername AND m.receiver.username = :firstUsername) ORDER BY m.sendingDate DESC
+            """)
+    Page<MessageResponse> getMessagesBetweenUsers(@Param("firstUsername") String first, @Param("secondUsername") String second, Pageable pageable);
 
     @Transactional
     @Modifying

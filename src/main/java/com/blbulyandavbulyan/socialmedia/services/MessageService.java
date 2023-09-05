@@ -20,7 +20,7 @@ public class MessageService {
     private IFriendService iFriendService;
 
     public Page<MessageResponse> getMessageForReceiver(String receiverName, String senderName, Pageable pageable) {
-        return messageRepository.findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(receiverName, senderName, pageable);
+        return messageRepository.getMessagesBetweenUsers(receiverName, senderName, pageable);
     }
 
     public Message sendMessage(String senderName, String receiverName, String text) {
