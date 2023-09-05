@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface MessageRepository extends JpaRepository<Message, Long> {
     Page<MessageResponse> findByReceiverUsernameAndSenderUsernameOrderBySendingDateDesc(String receiverName, String senderName, Pageable pageable);
 
+    Page<MessageResponse> findByReceiverUsernameAndSenderUsernameOrSenderUsernameAndReceiverUsernameOrderBySendingDateDesc(String first, String second, Pageable pageable);
+
     @Transactional
     @Modifying
     @Query("update Message m set m.read = :read where m.id = :id")
