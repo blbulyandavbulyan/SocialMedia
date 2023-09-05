@@ -1,24 +1,28 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
 import com.blbulyandavbulyan.socialmedia.dtos.Page;
+import com.blbulyandavbulyan.socialmedia.dtos.messages.CreateMessageRequest;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
+import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.repositories.MessageRepository;
+import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
-import com.blbulyandavbulyan.socialmedia.services.IFriendService;
 import com.blbulyandavbulyan.socialmedia.services.MessageService;
 import com.blbulyandavbulyan.socialmedia.utils.JWTTokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -32,17 +36,17 @@ import java.util.List;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class MessagesControllerTest {
+    private final String path = "/api/v1/messages";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -54,12 +58,12 @@ class MessagesControllerTest {
     private HttpHeaders httpHeaders;
     @Autowired
     private UserRepository userRepository;
-    @MockBean
-    private IFriendService iFriendService;
     private User user1;
     private User user2;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @PostConstruct
     void init() {
@@ -92,7 +96,7 @@ class MessagesControllerTest {
                 .limit(10).map(MessageResponseTestImpl::new).toList();
         var expectedContent = new Page<>(expectedMessages, 2, allSavedMessages.size(), pageSize, pageNumber, false, true);
         mockMvc.perform(
-                        get("/api/v1/messages")
+                        get(path)
                                 .queryParam("target", user2.getUsername())
                                 .queryParam("pageNumber", Integer.toString(pageNumber))
                                 .queryParam("pageSize", Integer.toString(pageSize))
@@ -127,4 +131,45 @@ class MessagesControllerTest {
 
     }
 
+    @Test
+    void normalSendMessage() throws Exception {
+        CreateMessageRequest createMessageRequest = new CreateMessageRequest(user2.getUsername(), "Some very long message");
+        //делаем наших пользователей друзьями
+        subscriptionRepository.save(new Subscription(user1.getUsername(), user2.getUsername()));
+        subscriptionRepository.save(new Subscription(user2.getUsername(), user1.getUsername()));
+        mockMvc.perform(
+                        post(path).contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(createMessageRequest))
+                                .headers(httpHeaders)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("receiver").value(user2.getUsername()))
+                .andExpect(jsonPath("messageId").value(new TypeSafeMatcher<>() {
+                    @Override
+                    protected boolean matchesSafely(Long item) {
+                        return messageRepository.existsById(item);
+                    }
+
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Expected long type, and message with this id should exist!");
+                    }
+                }, Long.class))
+                .andExpect(jsonPath("sendingDate").isString())
+                .andDo(
+                        document("normal-send-message",
+                                resourceDetails().description("Send a message to target").tag("message"),
+                                requestFields(
+                                        fieldWithPath("receiverName").type(JsonFieldType.STRING).description("User name of receiver of this message"),
+                                        fieldWithPath("text").type(JsonFieldType.STRING).description("Message text")
+                                ),
+                                responseFields(
+                                        fieldWithPath("messageId").type(JsonFieldType.NUMBER).description("Id of created message"),
+                                        fieldWithPath("receiver").type(JsonFieldType.STRING).description("Receiver of sending message"),
+                                        fieldWithPath("sendingDate").type(JsonFieldType.STRING).description("Sending date and time of this message")
+                                )
+                        )
+                );
+        Mockito.verify(messageService, Mockito.only()).sendMessage(user1.getUsername(), createMessageRequest.receiverName(), createMessageRequest.text());
+    }
 }
