@@ -90,7 +90,9 @@ class MessagesControllerTest {
         List<Message> allSavedMessages = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             allSavedMessages.add(messageRepository.saveAndFlush(new Message(user2, user1, "Случайное сообщение #" + (i + 1))));
-            Thread.sleep(500);
+            Thread.sleep(200);
+            allSavedMessages.add(messageRepository.saveAndFlush(new Message(user1, user2, "Другое случайное сообщение #" + (i + 1))));
+            Thread.sleep(200);
         }
         List<? extends MessageResponse> expectedMessages = allSavedMessages.stream()
                 .sorted(Comparator.comparing(Message::getSendingDate).reversed())
