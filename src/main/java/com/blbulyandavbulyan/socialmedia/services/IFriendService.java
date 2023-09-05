@@ -1,8 +1,5 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public interface IFriendService {
     /**
      * Проверяет друзья ли пользователи
