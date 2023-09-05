@@ -18,7 +18,6 @@
 		<jjwt.version>0.11.5</jjwt.version>
 		<restdocs-spec.version>0.22</restdocs-spec.version>
 		<restdocs-api-spec.version>0.18.3</restdocs-api-spec.version>
-		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
@@ -105,16 +104,7 @@
 			<version>${restdocs-api-spec.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${org.mapstruct.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct-processor</artifactId>
-			<version>${org.mapstruct.version}</version>
-		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -170,20 +160,6 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>${org.mapstruct.version}</version>
-						</path>
-					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 		</plugins>
