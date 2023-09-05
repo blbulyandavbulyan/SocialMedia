@@ -23,7 +23,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Transactional
     @Modifying
     @Query("update Message m set m.read = :read where m.id = :id")
-    int updateReadById(@Param("id") Long id, @Param("read") boolean read);
+    void updateReadById(@Param("id") Long id, @Param("read") boolean read);
 
     @Query("select m.receiver.username from Message m where m.id = :id")
     Optional<String> findReceiverUsernameById(@Param("id") Long id);
