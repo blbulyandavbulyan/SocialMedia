@@ -18,6 +18,16 @@ class MessageResponseTestImpl implements MessageResponse {
     }
 
     @Override
+    public String getReceiverUsername() {
+        return m.getReceiver().getUsername();
+    }
+
+    @Override
+    public String getSenderUsername() {
+        return m.getSender().getUsername();
+    }
+
+    @Override
     public String getText() {
         return m.getText();
     }
