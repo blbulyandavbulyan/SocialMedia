@@ -97,7 +97,7 @@ class MessagesControllerTest {
         List<? extends MessageResponse> expectedMessages = allSavedMessages.stream()
                 .sorted(Comparator.comparing(Message::getSendingDate).reversed())
                 .limit(10).map(MessageResponseTestImpl::new).toList();
-        var expectedContent = new Page<>(expectedMessages, 2, allSavedMessages.size(), pageSize, pageNumber, false, true);
+        var expectedContent = new Page<>(expectedMessages, (int) (messageRepository.count() / pageSize), allSavedMessages.size(), pageSize, pageNumber, false, true);
         mockMvc.perform(
                         get(path)
                                 .queryParam("target", user2.getUsername())
