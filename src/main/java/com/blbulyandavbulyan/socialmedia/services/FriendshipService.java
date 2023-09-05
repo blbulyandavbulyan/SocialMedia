@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class FriendshipService {
+public class FriendshipService implements IFriendService {
     private SubscriptionService subscriptionService;
 
     public boolean areTheyFriends(String first, String second) {
