@@ -10,8 +10,6 @@ jwt:
   lifetime: 10m
 socialmedia:
   files:
-    valid-extensions: [ ".png" ]
-    valid-mime-types: ["image/png", "image/jpeg"]
     path: /home/david/uploadFiles
     mime-type-to-valid-extension:
       image/jpeg: [ ".jpeg", ".jpg", ".jpe", ".JPEG", ".JPG", ".JPE" ]

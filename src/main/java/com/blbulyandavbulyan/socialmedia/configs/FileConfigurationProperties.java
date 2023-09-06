@@ -14,16 +14,7 @@ import java.util.Set;
 @Component
 public class FileConfigurationProperties {
     private HashMap<String, Set<String>> mimeTypeToValidExtension;
-    private Set<String> validExtensions;
-    private Set<String> validMimeTypes;
     private Path path;
-    public boolean isValidExtension(String extension){
-        return validExtensions.contains(extension);
-    }
-    public boolean isValidMimeType(String mimeType){
-        return validMimeTypes.contains(mimeType);
-    }
-
     public Optional<Set<String>> getValidExtensionForMimeType(String mimeType) {
         return Optional.ofNullable(mimeTypeToValidExtension.get(mimeType));
     }
