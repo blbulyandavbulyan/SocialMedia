@@ -38,10 +38,11 @@ public class FileService {
         User uploader = userService.findByUserName(publisherName).orElseThrow();
         if(multipartFile.isEmpty())
             throw new EmptyFileException("Uploading file is empty!");
-        if(!fileConfigurationProperties.isValidMimeType(multipartFile.getContentType()))
+        var validExtensionsOptional = fileConfigurationProperties.getValidExtensionForMimeType(multipartFile.getContentType());
+        if (validExtensionsOptional.isEmpty())
             throw new UploadedFileHasNotAllowedMimeTypeException("Uploaded file has not allowed mime type!");
         String fileExtension = extensionResolver.getFileExtension(multipartFile.getOriginalFilename()).orElseThrow();
-        if(!fileConfigurationProperties.isValidExtension(fileExtension))
+        if (!validExtensionsOptional.get().contains(fileExtension))
             throw new UploadedFileHasInvalidExtensionException("Uploaded file has invalid extension!");
         File file = new File(UUID.randomUUID(), uploader, multipartFile.getOriginalFilename(), fileExtension, multipartFile.getContentType());
         fileRepository.save(file);
