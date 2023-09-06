@@ -58,6 +58,7 @@ public class FileControllerTest {
     @Test
     @DisplayName("upload file with authorized user")
     public void uploadFileIfYouAreAuthorizedUser() throws Exception {
+        // TODO: 06.09.2023 Подумать, может тут стоит всё таки замокировать FileService
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
                 "file", "image.jpg", "image/jpeg",
                 this.getClass().getResourceAsStream(testFileName)
