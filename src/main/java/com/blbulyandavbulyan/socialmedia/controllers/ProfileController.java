@@ -22,4 +22,14 @@ public class ProfileController {
     public Page<SubscriptionResponse> getUnwatchedSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
         return Page.of(subscriptionService.getUnwatchedSubscriptions(principal.getName(), pageRequest.pageNumber(), pageRequest.pageSize(), pageRequest.direction()));
     }
+
+    @GetMapping("/friends")
+    public Page<SubscriptionResponse> getFriends(@RequestBody PageRequest pageRequest, Principal principal) {
+        throw new UnsupportedOperationException();
+    }
+
+    @GetMapping("/subscriptions/all")
+    public Page<SubscriptionResponse> getAllSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
+        throw new UnsupportedOperationException();
+    }
 }
