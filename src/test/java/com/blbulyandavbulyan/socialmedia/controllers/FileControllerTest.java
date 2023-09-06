@@ -54,7 +54,7 @@ public class FileControllerTest {
     private JWTTokenUtils jwtTokenUtils;
     @MockBean
     private UserRepository userRepository;
-    @SpyBean
+    @MockBean
     private FileConfigurationProperties fileConfiguration;
 
     @Test
