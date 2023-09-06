@@ -111,6 +111,6 @@ class SubscriptionControllerTest {
         Mockito.verify(subscriptionService, Mockito.only()).markSubscriptionAsViewed(user1.getUsername(), user2.getUsername());
         Optional<Subscription> subscription = subscriptionRepository.findById(new SubscriptionPK(user1.getUsername(), user2.getUsername()));
         assertTrue(subscription.isPresent());
-        assertTrue(subscription.get().getViewed());
+        assertTrue(subscription.get().isViewed());
     }
 }

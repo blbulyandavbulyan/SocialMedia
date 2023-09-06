@@ -28,8 +28,8 @@ public class Subscription {
     @CreationTimestamp
     @Column(name = "creation_date", nullable = false)
     private Instant creationDate;
-    @Column(name = "viewed")
-    private Boolean viewed;
+    @Column(name = "viewed", nullable = false)
+    private boolean viewed;
 
     public Subscription(String subscriberUsername, String targetUsername) {
         this.subscriberUsername = subscriberUsername;
