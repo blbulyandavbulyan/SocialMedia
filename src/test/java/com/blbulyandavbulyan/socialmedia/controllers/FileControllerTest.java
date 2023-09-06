@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
@@ -61,15 +62,15 @@ public class FileControllerTest {
     @DisplayName("upload file with authorized user")
     public void uploadFileIfYouAreAuthorizedUser() throws Exception {
         // TODO: 06.09.2023 Подумать, может тут стоит всё таки замокировать FileService
+        String contentType = "image/jpeg";
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
-                "file", "image.jpg", "image/jpeg",
+                "file", "image.jpg", contentType,
                 this.getClass().getResourceAsStream(testFileName)
         );
         HttpHeaders httpHeaders = new HttpHeaders();
         User user = new User("david", "sssfsfs", "test@gmail.com");
         Mockito.when(fileConfiguration.getPath()).thenReturn(Files.createTempDirectory("socialMediaTmpDir"));
-        Mockito.when(fileConfiguration.isValidExtension(".jpg")).thenReturn(true);
-        Mockito.when(fileConfiguration.isValidMimeType(mockMultipartFile.getContentType())).thenReturn(true);
+        Mockito.when(fileConfiguration.getValidExtensionForMimeType(contentType)).thenReturn(Optional.of(Set.of(".jpg")));
         Mockito.when(userRepository.findById(user.getUsername())).thenReturn(Optional.of(user));
         String jwtToken = jwtTokenUtils.generateToken(user.getUsername(), user.getAuthorities());
         httpHeaders.add("Authorization", "Bearer " + jwtToken);
