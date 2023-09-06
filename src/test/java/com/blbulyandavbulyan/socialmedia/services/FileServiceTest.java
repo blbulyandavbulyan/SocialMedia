@@ -27,10 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,8 +62,7 @@ class FileServiceTest {
         Mockito.when(multipartFile.getContentType()).thenReturn(contentType);
         Mockito.when(multipartFile.getOriginalFilename()).thenReturn(originalFileName);
         Mockito.when(multipartFile.getInputStream()).thenReturn(this.getClass().getResourceAsStream("/testimages/test_image.jpg"));
-        Mockito.when(fileConfigurationProperties.isValidMimeType(contentType)).thenReturn(true);
-        Mockito.when(fileConfigurationProperties.isValidExtension(".jpg")).thenReturn(true);
+        Mockito.when(fileConfigurationProperties.getValidExtensionForMimeType(contentType)).thenReturn(Optional.of(Set.of(".jpg")));
         Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(user));
         Mockito.when(extensionResolver.getFileExtension(originalFileName)).thenReturn(Optional.of(".jpg"));
         UUID savedFileUUID = fileService.save(multipartFile, publisherName);
@@ -101,9 +97,10 @@ class FileServiceTest {
         String mimeType = "image/jpeg";
         String publisherName = "testuser";
         Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(new User()));
+        Mockito.when(fileConfigurationProperties.getValidExtensionForMimeType(mimeType)).thenReturn(Optional.empty());
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.img", mimeType, new byte[]{2, 3, 4, 5, 6});
         assertThrows(UploadedFileHasNotAllowedMimeTypeException.class, () -> fileService.save(mockMultipartFile, publisherName));
-        Mockito.verify(fileConfigurationProperties, Mockito.times(1)).isValidMimeType(mimeType);
+        Mockito.verify(fileConfigurationProperties, Mockito.times(1)).getValidExtensionForMimeType(mimeType);
         Mockito.verify(fileConfigurationProperties, Mockito.never()).getPath();
     }
 
@@ -114,8 +111,7 @@ class FileServiceTest {
         String publisherName = "testuser";
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.jpg", mimeType, new byte[]{2, 3, 4, 5, 6});
         Mockito.when(userService.findByUserName(publisherName)).thenReturn(Optional.of(new User()));
-        Mockito.when(fileConfigurationProperties.isValidExtension(".jpg")).thenReturn(false);
-        Mockito.when(fileConfigurationProperties.isValidMimeType(mimeType)).thenReturn(true);
+        Mockito.when(fileConfigurationProperties.getValidExtensionForMimeType(mimeType)).thenReturn(Optional.of(Set.of()));
         Mockito.when(extensionResolver.getFileExtension(mockMultipartFile.getOriginalFilename())).thenReturn(Optional.of(".jpg"));
         assertThrows(UploadedFileHasInvalidExtensionException.class, () -> fileService.save(mockMultipartFile, publisherName));
         Mockito.verify(fileRepository, Mockito.never()).save(any());
