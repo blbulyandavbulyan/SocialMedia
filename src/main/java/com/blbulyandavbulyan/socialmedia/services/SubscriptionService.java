@@ -1,5 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
+import com.blbulyandavbulyan.socialmedia.dtos.subcriptions.SubscriptionResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.AttemptToSubscribeForYourselfException;
@@ -7,6 +8,9 @@ import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionAl
 import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionNotFoundException;
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,5 +40,9 @@ public class SubscriptionService {
 
     public void unsubscribe(String subscriber, String target) {
         subscriptionRepository.deleteById(new SubscriptionPK(subscriber, target));
+    }
+
+    public Page<SubscriptionResponse> getUnwatchedSubscriptions(String target, int pageNumber, int pageSize, Sort.Direction direction) {
+        return subscriptionRepository.findByTargetUsernameAndViewedIsFalse(target, PageRequest.of(pageNumber - 1, pageSize, direction));
     }
 }
