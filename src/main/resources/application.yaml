@@ -12,6 +12,6 @@ socialmedia:
   files:
     path: /home/david/uploadFiles
     mime-type-to-valid-extension:
-      image/jpeg: [ ".jpeg", ".jpg", ".jpe", ".JPEG", ".JPG", ".JPE" ]
-      image/png: [ ".png", ".PNG" ]
+      "[image/jpeg]": [ ".jpeg", ".jpg", ".jpe", ".JPEG", ".JPG", ".JPE" ]
+      "[image/png]": [ ".png", ".PNG" ]
 
