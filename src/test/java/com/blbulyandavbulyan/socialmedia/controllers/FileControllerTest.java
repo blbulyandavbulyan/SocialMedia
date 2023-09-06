@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import java.util.UUID;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -86,27 +88,30 @@ public class FileControllerTest {
         UUID fileUIID = UUID.randomUUID();
         String contentType = "image/jpeg";
         URL resource = this.getClass().getResource(testFileName);
+        assertNotNull(resource, "Test resource not found, please check if it exists");
         FileService.FoundFile foundFile = new FileService.FoundFile("test.jpg", contentType, new UrlResource(resource));
         Mockito.doReturn(foundFile).when(fileService).getFile(fileUIID);
         User user = new User("david", "sssfsfs", "test@gmail.com");
         String jwtToken = jwtTokenUtils.generateToken(user.getUsername(), user.getAuthorities());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "Bearer " + jwtToken);
-        byte[] expectedContent = resource.openStream().readAllBytes();
-        mockMvc.perform(get("/api/v1/files/{fileUUID}", fileUIID).headers(httpHeaders))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + foundFile.fileName() + "\""))
-                .andExpect(header().string(HttpHeaders.CONTENT_LENGTH, Integer.toString(expectedContent.length)))
-                .andExpect(content().bytes(expectedContent))
-                .andDo(document("normal-get-file",
-                        resourceDetails().description("Get uploaded file by UUID").tag("files"),
-                        pathParameters(parameterWithName("fileUUID").description("UUID of uploaded file, which you want to get")),
-                        responseHeaders(
-                                headerWithName(HttpHeaders.CONTENT_TYPE).description("Type of your file"),
-                                headerWithName(HttpHeaders.CONTENT_LENGTH).description("File size in bytes"),
-                                headerWithName(HttpHeaders.CONTENT_DISPOSITION).description("This header will contain original file name, with this file name file was uploaded")
-                        )
-                ));
+        try (InputStream inputStream = resource.openStream()) {
+            byte[] expectedContent = inputStream.readAllBytes();
+            mockMvc.perform(get("/api/v1/files/{fileUUID}", fileUIID).headers(httpHeaders))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(contentType))
+                    .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + foundFile.fileName() + "\""))
+                    .andExpect(header().string(HttpHeaders.CONTENT_LENGTH, Integer.toString(expectedContent.length)))
+                    .andExpect(content().bytes(expectedContent))
+                    .andDo(document("normal-get-file",
+                            resourceDetails().description("Get uploaded file by UUID").tag("files"),
+                            pathParameters(parameterWithName("fileUUID").description("UUID of uploaded file, which you want to get")),
+                            responseHeaders(
+                                    headerWithName(HttpHeaders.CONTENT_TYPE).description("Type of your file"),
+                                    headerWithName(HttpHeaders.CONTENT_LENGTH).description("File size in bytes"),
+                                    headerWithName(HttpHeaders.CONTENT_DISPOSITION).description("This header will contain original file name, with this file name file was uploaded")
+                            )
+                    ));
+        }
     }
 }
