@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.isA;
 @ExtendWith(MockitoExtension.class)
 class MessageServiceTest {
     @Mock
-    private IFriendService iFriendService;
+    private FriendshipService friendshipService;
     @Mock
     private MessageRepository messageRepository;
     @Mock
@@ -52,9 +52,9 @@ class MessageServiceTest {
     void sendMessageShouldThrowExceptionIfUsersAreNotFriends() {
         String receiverName = "david";
         String senderName = "andrey";
-        Mockito.when(iFriendService.areTheyFriends(senderName, receiverName)).thenReturn(false);
+        Mockito.when(friendshipService.areTheyFriends(senderName, receiverName)).thenReturn(false);
         assertThrows(SendingMessageToNonFriendException.class, () -> underTest.sendMessage(senderName, receiverName, "test"));
-        Mockito.verify(iFriendService, Mockito.only()).areTheyFriends(senderName, receiverName);
+        Mockito.verify(friendshipService, Mockito.only()).areTheyFriends(senderName, receiverName);
         Mockito.verify(messageRepository, Mockito.never()).save(any());
     }
 
@@ -64,7 +64,7 @@ class MessageServiceTest {
         String receiverName = "andrey";
         Long expectedId = 3232L;
         Instant expectedSendingDate = Instant.now();
-        Mockito.when(iFriendService.areTheyFriends(senderName, receiverName)).thenReturn(true);
+        Mockito.when(friendshipService.areTheyFriends(senderName, receiverName)).thenReturn(true);
         Mockito.when(messageRepository.save(isA(Message.class))).then((invocation -> {
             Message m = invocation.getArgument(0);
             m.setSendingDate(expectedSendingDate);
@@ -81,7 +81,7 @@ class MessageServiceTest {
         Message sendMessageResult = underTest.sendMessage(senderName, receiverName, expectedText);
         ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
         Mockito.verify(messageRepository, Mockito.only()).save(messageArgumentCaptor.capture());
-        Mockito.verify(iFriendService, Mockito.only()).areTheyFriends(senderName, receiverName);
+        Mockito.verify(friendshipService, Mockito.only()).areTheyFriends(senderName, receiverName);
         //проверка сохранённого сообщения
         Message savingMessage = messageArgumentCaptor.getValue();
         assertEquals(expectedText, savingMessage.getText());

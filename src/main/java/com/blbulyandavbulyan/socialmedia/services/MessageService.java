@@ -17,14 +17,14 @@ import org.springframework.stereotype.Service;
 public class MessageService {
     private MessageRepository messageRepository;
     private UserService userService;
-    private IFriendService iFriendService;
+    private FriendshipService friendshipService;
 
     public Page<MessageResponse> getMessageForReceiver(String receiverName, String senderName, Pageable pageable) {
         return messageRepository.getMessagesBetweenUsers(receiverName, senderName, pageable);
     }
 
     public Message sendMessage(String senderName, String receiverName, String text) {
-        if (iFriendService.areTheyFriends(senderName, receiverName)) {
+        if (friendshipService.areTheyFriends(senderName, receiverName)) {
             Message message = new Message(
                     userService.findByUserName(senderName).orElseThrow(() -> new UserNotFoundException("User with name " + senderName + " not found!")),
                     userService.findByUserName(receiverName).orElseThrow(() -> new UserNotFoundException("User with name " + receiverName + " not found!")),
