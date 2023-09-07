@@ -1,12 +1,14 @@
 package com.blbulyandavbulyan.socialmedia.dtos;
 
+import lombok.Getter;
+
 import java.time.Instant;
 
 /**
  * DTO для предоставления информации о друге
- *
  * @param friendUsername    имя пользователя друга
- * @param friendShipStarted дата и время начала дружбы
+ * @param friendshipStartDate дата и время начала дружбы
  */
-public record Friend(String friendUsername, Instant friendShipStarted) {
+public record Friend(@Getter String friendUsername, @Getter Instant friendshipStartDate) implements IFriend {
+
 }
