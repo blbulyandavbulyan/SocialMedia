@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -42,11 +43,22 @@ class ProfileControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private <T> org.springframework.data.domain.Page<T> getMockPage(com.blbulyandavbulyan.socialmedia.dtos.Page<T> expected, long expectedTotalElements) {
+        Page<T> result = Mockito.mock(Page.class);
+        when(result.getTotalPages()).thenReturn(expected.totalPages());
+        when(result.getSize()).thenReturn(expected.pageSize());
+        when(result.getTotalElements()).thenReturn(expectedTotalElements);
+        when(result.getNumber()).thenReturn(expected.number() - 1);
+        when(result.getContent()).thenReturn(expected.content());
+        when(result.isFirst()).thenReturn(expected.first());
+        when(result.isLast()).thenReturn(expected.last());
+        return result;
+    }
+
     @Test
     void getUnwatchedSubscriptions() throws Exception {
         String targetUsername = "david";
         PageRequest pageRequest = new PageRequest(1, 4, Sort.Direction.ASC);
-        Sort.Direction direction = Sort.Direction.ASC;
         int pageIndex = 0;
         int totalPages = 1;
         boolean first = true;
@@ -56,18 +68,6 @@ class ProfileControllerTest {
                 new SubscriptionResponse("evgeniy", Instant.now(), false),
                 new SubscriptionResponse("anatoly", Instant.now(), false)
         );
-        var subscriptionResponsePage = Mockito.mock(org.springframework.data.domain.Page.class);
-        when(subscriptionResponsePage.getTotalPages()).thenReturn(totalPages);
-        when(subscriptionResponsePage.getSize()).thenReturn(pageRequest.pageSize());
-        when(subscriptionResponsePage.getTotalElements()).thenReturn((long) subscriptionResponses.size());
-        when(subscriptionResponsePage.getNumber()).thenReturn(pageIndex);
-        when(subscriptionResponsePage.getContent()).thenReturn(subscriptionResponses);
-        when(subscriptionResponsePage.isFirst()).thenReturn(first);
-        when(subscriptionResponsePage.isLast()).thenReturn(last);
-        when(subscriptionService.getUnwatchedSubscriptions(targetUsername,
-                pageRequest.pageNumber(),
-                pageRequest.pageSize(),
-                Sort.Direction.ASC)).thenReturn(subscriptionResponsePage);
         var expectedPageResponse = new com.blbulyandavbulyan.socialmedia.dtos.Page<>(
                 subscriptionResponses,
                 totalPages,
@@ -77,6 +77,11 @@ class ProfileControllerTest {
                 last,
                 first
         );
+        var subscriptionResponsePage = getMockPage(expectedPageResponse, subscriptionResponses.size());
+        when(subscriptionService.getUnwatchedSubscriptions(targetUsername,
+                pageRequest.pageNumber(),
+                pageRequest.pageSize(),
+                Sort.Direction.ASC)).thenReturn(subscriptionResponsePage);
         mockMvc.perform(get(path + "/subscriptions/unwatched")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(pageRequest))
