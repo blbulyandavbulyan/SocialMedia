@@ -43,11 +43,11 @@ class ProfileControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private <T> org.springframework.data.domain.Page<T> getMockPage(com.blbulyandavbulyan.socialmedia.dtos.Page<T> expected, long expectedTotalElements) {
+    private <T> org.springframework.data.domain.Page<T> getMockPage(com.blbulyandavbulyan.socialmedia.dtos.Page<T> expected) {
         Page<T> result = Mockito.mock(Page.class);
         when(result.getTotalPages()).thenReturn(expected.totalPages());
         when(result.getSize()).thenReturn(expected.pageSize());
-        when(result.getTotalElements()).thenReturn(expectedTotalElements);
+        when(result.getTotalElements()).thenReturn(expected.totalElements());
         when(result.getNumber()).thenReturn(expected.number() - 1);
         when(result.getContent()).thenReturn(expected.content());
         when(result.isFirst()).thenReturn(expected.first());
@@ -77,7 +77,7 @@ class ProfileControllerTest {
                 last,
                 first
         );
-        var subscriptionResponsePage = getMockPage(expectedPageResponse, subscriptionResponses.size());
+        var subscriptionResponsePage = getMockPage(expectedPageResponse);
         when(subscriptionService.getUnwatchedSubscriptions(targetUsername,
                 pageRequest.pageNumber(),
                 pageRequest.pageSize(),
