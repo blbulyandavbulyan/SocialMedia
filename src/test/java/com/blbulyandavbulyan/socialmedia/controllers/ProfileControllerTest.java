@@ -1,7 +1,10 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
+import com.blbulyandavbulyan.socialmedia.dtos.Friend;
+import com.blbulyandavbulyan.socialmedia.dtos.IFriend;
 import com.blbulyandavbulyan.socialmedia.dtos.page.PageRequest;
 import com.blbulyandavbulyan.socialmedia.dtos.subcriptions.SubscriptionResponse;
+import com.blbulyandavbulyan.socialmedia.services.FriendshipService;
 import com.blbulyandavbulyan.socialmedia.services.SubscriptionService;
 import com.blbulyandavbulyan.socialmedia.testutils.AuthorizationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,16 +19,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.util.List;
 
+import static com.blbulyandavbulyan.socialmedia.testutils.PageUtils.generatePageResponseDescription;
+import static com.blbulyandavbulyan.socialmedia.testutils.PageUtils.getMockPage;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,26 +41,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs
 class ProfileControllerTest {
     private final String path = "/api/v1/profile";
+    private final RequestFieldsSnippet pageRequestFieldSnippet = requestFields(
+            fieldWithPath("pageNumber").type(JsonFieldType.NUMBER).description("Number of page(starts from 1)"),
+            fieldWithPath("pageSize").type(JsonFieldType.NUMBER).description("Size of pages"),
+            fieldWithPath("direction").type(JsonFieldType.STRING).description("The direction of sorting, ASC - ascended, DESC - descended")
+    );
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     private SubscriptionService subscriptionService;
+    @MockBean
+    private FriendshipService friendshipService;
     @Autowired
     private AuthorizationUtils authorizationUtils;
     @Autowired
     private ObjectMapper objectMapper;
 
-    private <T> org.springframework.data.domain.Page<T> getMockPage(com.blbulyandavbulyan.socialmedia.dtos.Page<T> expected) {
-        Page<T> result = Mockito.mock(Page.class);
-        when(result.getTotalPages()).thenReturn(expected.totalPages());
-        when(result.getSize()).thenReturn(expected.pageSize());
-        when(result.getTotalElements()).thenReturn(expected.totalElements());
-        when(result.getNumber()).thenReturn(expected.number() - 1);
-        when(result.getContent()).thenReturn(expected.content());
-        when(result.isFirst()).thenReturn(expected.first());
-        when(result.isLast()).thenReturn(expected.last());
-        return result;
-    }
+
 
     @Test
     void getUnwatchedSubscriptions() throws Exception {
@@ -92,22 +96,44 @@ class ProfileControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(expectedPageResponse), true))
                 .andDo(document("normal-get-unwatched-subscriptions",
                         resourceDetails().description("Get unwatched subscriptions").tag("subscription"),
-                        requestFields(
-                                fieldWithPath("pageNumber").type(JsonFieldType.NUMBER).description("Number of page(starts from 1)"),
-                                fieldWithPath("pageSize").type(JsonFieldType.NUMBER).description("Size of pages"),
-                                fieldWithPath("direction").type(JsonFieldType.STRING).description("The direction of sorting, ASC - ascended, DESC - descended")
-                        ),
-                        responseFields(
-                                fieldWithPath("content").type(JsonFieldType.ARRAY).description("This array contains requested content"),
+                        pageRequestFieldSnippet,
+                        generatePageResponseDescription(
                                 fieldWithPath("content[].subscriberUsername").type(JsonFieldType.STRING).description("Name of user, who is subscribed to you"),
                                 fieldWithPath("content[].creationDate").type(JsonFieldType.STRING).description("Date and time of subscribing"),
-                                fieldWithPath("content[].viewed").type(JsonFieldType.BOOLEAN).description("Indicates, if this subscription watched or not"),
-                                fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("Total count of pages with this page size"),
-                                fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("Total count of unwatched subscriptions, between you and given username"),
-                                fieldWithPath("pageSize").type(JsonFieldType.NUMBER).description("The given page size in the request"),
-                                fieldWithPath("number").type(JsonFieldType.NUMBER).description("Number of requested page(which you give in the request)"),
-                                fieldWithPath("first").type(JsonFieldType.BOOLEAN).description("Indicates is this first page or not"),
-                                fieldWithPath("last").type(JsonFieldType.BOOLEAN).description("Indicates is this last page or not")
+                                fieldWithPath("content[].viewed").type(JsonFieldType.BOOLEAN).description("Indicates, if this subscription watched or not")
+                        )
+                ));
+    }
+
+    @Test
+    void getFriends() throws Exception {
+        String target = "david";
+        PageRequest pageRequest = new PageRequest(1, 4, Sort.Direction.ASC);
+        var expectedResponse = new com.blbulyandavbulyan.socialmedia.dtos.Page<IFriend>(
+                List.of(
+                        new Friend("test", Instant.now()),
+                        new Friend("test2", Instant.now()),
+                        new Friend("test3", Instant.now())
+                ),
+                1, 4, 10, 1, false, true
+        );
+        Page<IFriend> mockPage = getMockPage(expectedResponse);
+        Mockito.when(friendshipService.getFriends(target, pageRequest.pageNumber(), pageRequest.pageSize(), pageRequest.direction()))
+                .thenReturn(mockPage);
+        mockMvc.perform(get(path + "/friends")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(pageRequest))
+                        .headers(authorizationUtils.generateHeaders(target, List.of()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse), true))
+                .andDo(document("normal-get-friends",
+                        resourceDetails().description("Getting your friends").tag("friends"),
+                        pageRequestFieldSnippet,
+                        generatePageResponseDescription(
+                                fieldWithPath("content[].friendUsername").type(JsonFieldType.STRING).description("Username of your friend"),
+                                fieldWithPath("content[].friendshipStartDate").type(JsonFieldType.STRING).description("Date and time, when your friendship was started")
                         )
                 ));
     }

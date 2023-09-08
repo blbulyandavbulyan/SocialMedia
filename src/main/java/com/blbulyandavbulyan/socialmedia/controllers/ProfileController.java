@@ -1,8 +1,10 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
+import com.blbulyandavbulyan.socialmedia.dtos.IFriend;
 import com.blbulyandavbulyan.socialmedia.dtos.Page;
 import com.blbulyandavbulyan.socialmedia.dtos.page.PageRequest;
 import com.blbulyandavbulyan.socialmedia.dtos.subcriptions.SubscriptionResponse;
+import com.blbulyandavbulyan.socialmedia.services.FriendshipService;
 import com.blbulyandavbulyan.socialmedia.services.SubscriptionService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +19,15 @@ import java.security.Principal;
 @AllArgsConstructor
 public class ProfileController {
     private SubscriptionService subscriptionService;
-
+    private FriendshipService friendshipService;
     @GetMapping("/subscriptions/unwatched")
     public Page<SubscriptionResponse> getUnwatchedSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
         return Page.of(subscriptionService.getUnwatchedSubscriptions(principal.getName(), pageRequest.pageNumber(), pageRequest.pageSize(), pageRequest.direction()));
     }
 
     @GetMapping("/friends")
-    public Page<SubscriptionResponse> getFriends(@RequestBody PageRequest pageRequest, Principal principal) {
-        throw new UnsupportedOperationException();
+    public Page<IFriend> getFriends(@RequestBody PageRequest pageRequest, Principal principal) {
+        return Page.of(friendshipService.getFriends(principal.getName(), pageRequest.pageNumber(), pageRequest.pageSize(), pageRequest.direction()));
     }
 
     @GetMapping("/subscriptions/all")
