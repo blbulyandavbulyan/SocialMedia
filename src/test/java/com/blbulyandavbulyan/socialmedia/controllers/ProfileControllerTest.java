@@ -82,10 +82,7 @@ class ProfileControllerTest {
                 first
         );
         var subscriptionResponsePage = getMockPage(expectedPageResponse);
-        when(subscriptionService.getUnwatchedSubscriptions(targetUsername,
-                pageRequest.pageNumber(),
-                pageRequest.pageSize(),
-                Sort.Direction.ASC)).thenReturn(subscriptionResponsePage);
+        when(subscriptionService.getUnwatchedSubscriptions(targetUsername, pageRequest)).thenReturn(subscriptionResponsePage);
         mockMvc.perform(get(path + "/subscriptions/unwatched")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(pageRequest))

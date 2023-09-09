@@ -22,7 +22,7 @@ public class ProfileController {
     private FriendshipService friendshipService;
     @GetMapping("/subscriptions/unwatched")
     public Page<SubscriptionResponse> getUnwatchedSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
-        return Page.of(subscriptionService.getUnwatchedSubscriptions(principal.getName(), pageRequest.pageNumber(), pageRequest.pageSize(), pageRequest.direction()));
+        return Page.of(subscriptionService.getUnwatchedSubscriptions(principal.getName(), pageRequest));
     }
 
     @GetMapping("/friends")

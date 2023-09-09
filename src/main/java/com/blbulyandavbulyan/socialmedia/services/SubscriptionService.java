@@ -9,7 +9,6 @@ import com.blbulyandavbulyan.socialmedia.exceptions.subscriptions.SubscriptionNo
 import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +41,13 @@ public class SubscriptionService {
         subscriptionRepository.deleteById(new SubscriptionPK(subscriber, target));
     }
 
-    public Page<SubscriptionResponse> getUnwatchedSubscriptions(String target, int pageNumber, int pageSize, Sort.Direction direction) {
-        return subscriptionRepository.findByTargetUsernameAndViewedIsFalse(target, PageRequest.of(pageNumber - 1, pageSize, direction));
+    public Page<SubscriptionResponse> getUnwatchedSubscriptions(String target, com.blbulyandavbulyan.socialmedia.dtos.page.PageRequest pageRequest) {
+        return subscriptionRepository.findByTargetUsernameAndViewedIsFalse(target,
+                org.springframework.data.domain.PageRequest.of(
+                        pageRequest.pageNumber() - 1,
+                        pageRequest.pageSize(),
+                        Sort.by(pageRequest.direction(), "creationDate")
+                )
+        );
     }
 }
