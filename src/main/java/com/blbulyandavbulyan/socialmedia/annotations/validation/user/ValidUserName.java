@@ -1,4 +1,4 @@
-package com.blbulyandavbulyan.socialmedia.annotations.validation;
+package com.blbulyandavbulyan.socialmedia.annotations.validation.user;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -11,11 +11,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 @Constraint(validatedBy = {})
 @NotBlank
-@Size(min = 10, max = 100)
+@Size(min = 1, max = 50)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.RECORD_COMPONENT})
-public @interface ValidRawPassword {
-    String message() default "Password is not valid!";
+public @interface ValidUserName {
+    String message() default "User name is not valid!";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

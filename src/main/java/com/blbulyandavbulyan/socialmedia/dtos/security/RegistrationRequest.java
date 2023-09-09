@@ -1,8 +1,8 @@
 package com.blbulyandavbulyan.socialmedia.dtos.security;
 
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidRawPassword;
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserEmail;
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidRawPassword;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserEmail;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
 
 /**
  * Запрос регистрации

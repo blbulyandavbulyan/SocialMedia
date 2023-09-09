@@ -1,6 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
 import com.blbulyandavbulyan.socialmedia.services.SubscriptionService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

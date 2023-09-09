@@ -1,4 +1,4 @@
-package com.blbulyandavbulyan.socialmedia.annotations.validation;
+package com.blbulyandavbulyan.socialmedia.annotations.validation.user;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

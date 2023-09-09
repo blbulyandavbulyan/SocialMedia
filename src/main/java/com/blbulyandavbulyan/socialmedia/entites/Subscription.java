@@ -1,6 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.entites;
 
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
 import com.blbulyandavbulyan.socialmedia.entites.keys.SubscriptionPK;
 import jakarta.persistence.*;
 import lombok.Getter;

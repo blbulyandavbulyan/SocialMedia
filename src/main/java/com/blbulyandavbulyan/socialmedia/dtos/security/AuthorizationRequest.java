@@ -1,7 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.dtos.security;
 
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidRawPassword;
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidRawPassword;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
 
 /**
  * Объект, отправляемый на сервер для авторизации

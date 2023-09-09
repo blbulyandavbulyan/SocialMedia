@@ -1,7 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.entites;
 
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserEmail;
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserEmail;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

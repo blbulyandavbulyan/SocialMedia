@@ -1,6 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
-import com.blbulyandavbulyan.socialmedia.annotations.validation.ValidUserName;
+import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
 import com.blbulyandavbulyan.socialmedia.dtos.Page;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.CreateMessageRequest;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageCreatedResponse;
