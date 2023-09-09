@@ -2,6 +2,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.dtos.IFriend;
 import com.blbulyandavbulyan.socialmedia.dtos.page.PageRequest;
+import com.blbulyandavbulyan.socialmedia.repositories.SubscriptionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class FriendshipService {
     private SubscriptionService subscriptionService;
-
+    private SubscriptionRepository subscriptionRepository;
     /**
      * Проверяет друзья ли пользователи
      *
@@ -33,6 +34,10 @@ public class FriendshipService {
      */
     public Page<IFriend> getFriends(String name, PageRequest pageRequest) {
         // TODO: 07.09.2023 добавить здесь вызов метода из репозитория subscriptionRepository или прокинуть этот вызов через сервис
-        throw new UnsupportedOperationException();
+        return subscriptionRepository.findAllFriends(name,
+                org.springframework.data.domain.PageRequest.of(pageRequest.pageNumber() - 1,
+                        pageRequest.pageSize(),
+                        Sort.by(pageRequest.direction(), "friendshipStartDate"))
+        );
     }
 }
