@@ -27,7 +27,7 @@ public class ProfileController {
 
     @GetMapping("/friends")
     public Page<IFriend> getFriends(@RequestBody PageRequest pageRequest, Principal principal) {
-        return Page.of(friendshipService.getFriends(principal.getName(), pageRequest.pageNumber(), pageRequest.pageSize(), pageRequest.direction()));
+        return Page.of(friendshipService.getFriends(principal.getName(), pageRequest));
     }
 
     @GetMapping("/subscriptions/all")

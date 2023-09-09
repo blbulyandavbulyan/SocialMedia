@@ -1,6 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.dtos.IFriend;
+import com.blbulyandavbulyan.socialmedia.dtos.page.PageRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -23,7 +24,14 @@ public class FriendshipService {
                 && subscriptionService.isFirstSubscriberForSecond(username2, username1);
     }
 
-    public Page<IFriend> getFriends(String name, int pageNumber, int pageSize, Sort.Direction direction) {
+    /**
+     * Получает друзей заданного пользователя
+     *
+     * @param name        имя пользователя, чьих друзей мы ищем
+     * @param pageRequest запрос страницы(подразумевается моё DTO)
+     * @return страницу, содержащую друзей
+     */
+    public Page<IFriend> getFriends(String name, PageRequest pageRequest) {
         // TODO: 07.09.2023 добавить здесь вызов метода из репозитория subscriptionRepository или прокинуть этот вызов через сервис
         throw new UnsupportedOperationException();
     }

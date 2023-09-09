@@ -118,7 +118,7 @@ class ProfileControllerTest {
                 1, 4, 10, 1, false, true
         );
         Page<IFriend> mockPage = getMockPage(expectedResponse);
-        Mockito.when(friendshipService.getFriends(target, pageRequest.pageNumber(), pageRequest.pageSize(), pageRequest.direction()))
+        Mockito.when(friendshipService.getFriends(target, pageRequest))
                 .thenReturn(mockPage);
         mockMvc.perform(get(path + "/friends")
                         .contentType(MediaType.APPLICATION_JSON)
