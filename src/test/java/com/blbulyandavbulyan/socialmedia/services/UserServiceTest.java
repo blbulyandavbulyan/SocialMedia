@@ -1,9 +1,8 @@
 package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.User;
-import com.blbulyandavbulyan.socialmedia.exceptions.InvalidLoginOrPassword;
-import com.blbulyandavbulyan.socialmedia.exceptions.UserWithThisEmailAlreadyExists;
-import com.blbulyandavbulyan.socialmedia.exceptions.UserWithThisNameAlreadyExist;
+import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisEmailAlreadyExists;
+import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisNameAlreadyExist;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
