@@ -1,8 +1,8 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
 import com.blbulyandavbulyan.socialmedia.dtos.IFriend;
-import com.blbulyandavbulyan.socialmedia.dtos.Page;
 import com.blbulyandavbulyan.socialmedia.dtos.page.PageRequest;
+import com.blbulyandavbulyan.socialmedia.dtos.page.PageResponse;
 import com.blbulyandavbulyan.socialmedia.dtos.subcriptions.SubscriptionResponse;
 import com.blbulyandavbulyan.socialmedia.services.FriendshipService;
 import com.blbulyandavbulyan.socialmedia.services.SubscriptionService;
@@ -21,17 +21,17 @@ public class ProfileController {
     private SubscriptionService subscriptionService;
     private FriendshipService friendshipService;
     @GetMapping("/subscriptions/unwatched")
-    public Page<SubscriptionResponse> getUnwatchedSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
-        return Page.of(subscriptionService.getUnwatchedSubscriptions(principal.getName(), pageRequest));
+    public PageResponse<SubscriptionResponse> getUnwatchedSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
+        return PageResponse.of(subscriptionService.getUnwatchedSubscriptions(principal.getName(), pageRequest));
     }
 
     @GetMapping("/friends")
-    public Page<IFriend> getFriends(@RequestBody PageRequest pageRequest, Principal principal) {
-        return Page.of(friendshipService.getFriends(principal.getName(), pageRequest));
+    public PageResponse<IFriend> getFriends(@RequestBody PageRequest pageRequest, Principal principal) {
+        return PageResponse.of(friendshipService.getFriends(principal.getName(), pageRequest));
     }
 
     @GetMapping("/subscriptions/all")
-    public Page<SubscriptionResponse> getAllSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
+    public PageResponse<SubscriptionResponse> getAllSubscriptions(@RequestBody PageRequest pageRequest, Principal principal) {
         throw new UnsupportedOperationException();
     }
 }

@@ -1,10 +1,10 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
 import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
-import com.blbulyandavbulyan.socialmedia.dtos.Page;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.CreateMessageRequest;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageCreatedResponse;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
+import com.blbulyandavbulyan.socialmedia.dtos.page.PageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
 import com.blbulyandavbulyan.socialmedia.services.MessageService;
 import lombok.AllArgsConstructor;
@@ -34,10 +34,10 @@ public class MessagesController {
     }
 
     @GetMapping
-    public Page<MessageResponse> getMessages(@ValidUserName @RequestParam("target") String target,
-                                             @RequestParam Integer pageNumber,
-                                             @RequestParam(defaultValue = "10") Integer pageSize,
-                                             Principal principal) {
-        return Page.of(messageService.getMessageForReceiver(principal.getName(), target, PageRequest.of(pageNumber - 1, pageSize)));
+    public PageResponse<MessageResponse> getMessages(@ValidUserName @RequestParam("target") String target,
+                                                     @RequestParam Integer pageNumber,
+                                                     @RequestParam(defaultValue = "10") Integer pageSize,
+                                                     Principal principal) {
+        return PageResponse.of(messageService.getMessageForReceiver(principal.getName(), target, PageRequest.of(pageNumber - 1, pageSize)));
     }
 }

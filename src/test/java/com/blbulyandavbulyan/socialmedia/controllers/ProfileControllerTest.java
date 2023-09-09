@@ -3,6 +3,7 @@ package com.blbulyandavbulyan.socialmedia.controllers;
 import com.blbulyandavbulyan.socialmedia.dtos.Friend;
 import com.blbulyandavbulyan.socialmedia.dtos.IFriend;
 import com.blbulyandavbulyan.socialmedia.dtos.page.PageRequest;
+import com.blbulyandavbulyan.socialmedia.dtos.page.PageResponse;
 import com.blbulyandavbulyan.socialmedia.dtos.subcriptions.SubscriptionResponse;
 import com.blbulyandavbulyan.socialmedia.services.FriendshipService;
 import com.blbulyandavbulyan.socialmedia.services.SubscriptionService;
@@ -72,7 +73,7 @@ class ProfileControllerTest {
                 new SubscriptionResponse("evgeniy", Instant.now(), false),
                 new SubscriptionResponse("anatoly", Instant.now(), false)
         );
-        var expectedPageResponse = new com.blbulyandavbulyan.socialmedia.dtos.Page<>(
+        var expectedPageResponse = new PageResponse<>(
                 subscriptionResponses,
                 totalPages,
                 subscriptionResponses.size(),
@@ -106,7 +107,7 @@ class ProfileControllerTest {
     void getFriends() throws Exception {
         String target = "david";
         PageRequest pageRequest = new PageRequest(1, 4, Sort.Direction.ASC);
-        var expectedResponse = new com.blbulyandavbulyan.socialmedia.dtos.Page<IFriend>(
+        var expectedResponse = new PageResponse<IFriend>(
                 List.of(
                         new Friend("test", Instant.now()),
                         new Friend("test2", Instant.now()),

@@ -1,8 +1,8 @@
 package com.blbulyandavbulyan.socialmedia.controllers;
 
-import com.blbulyandavbulyan.socialmedia.dtos.Page;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.CreateMessageRequest;
 import com.blbulyandavbulyan.socialmedia.dtos.messages.MessageResponse;
+import com.blbulyandavbulyan.socialmedia.dtos.page.PageResponse;
 import com.blbulyandavbulyan.socialmedia.entites.Message;
 import com.blbulyandavbulyan.socialmedia.entites.Subscription;
 import com.blbulyandavbulyan.socialmedia.entites.User;
@@ -97,7 +97,7 @@ class MessagesControllerTest {
         List<? extends MessageResponse> expectedMessages = allSavedMessages.stream()
                 .sorted(Comparator.comparing(Message::getSendingDate).reversed())
                 .limit(10).map(MessageResponseTestImpl::new).toList();
-        var expectedContent = new Page<>(expectedMessages, (int) (messageRepository.count() / pageSize), allSavedMessages.size(), pageSize, pageNumber, false, true);
+        var expectedContent = new PageResponse<>(expectedMessages, (int) (messageRepository.count() / pageSize), allSavedMessages.size(), pageSize, pageNumber, false, true);
         mockMvc.perform(
                         get(path)
                                 .queryParam("target", user2.getUsername())

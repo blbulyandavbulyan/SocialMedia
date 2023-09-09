@@ -1,5 +1,6 @@
 package com.blbulyandavbulyan.socialmedia.testutils;
 
+import com.blbulyandavbulyan.socialmedia.dtos.page.PageResponse;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -31,19 +32,19 @@ public class PageUtils {
     /**
      * Принимает на вход мою Page DTO и возвращает mock Spring страницы
      *
-     * @param dtoPage моя Page DTO из которой будет создана spring Page
+     * @param dtoPageResponse моя Page DTO из которой будет создана spring Page
      * @param <T>     тип элемента в контенте страницы
      * @return созданный mock Spring page
      */
-    public static <T> org.springframework.data.domain.Page<T> getMockPage(com.blbulyandavbulyan.socialmedia.dtos.Page<T> dtoPage) {
+    public static <T> org.springframework.data.domain.Page<T> getMockPage(PageResponse<T> dtoPageResponse) {
         Page<T> result = Mockito.mock(Page.class);
-        when(result.getTotalPages()).thenReturn(dtoPage.totalPages());
-        when(result.getSize()).thenReturn(dtoPage.pageSize());
-        when(result.getTotalElements()).thenReturn(dtoPage.totalElements());
-        when(result.getNumber()).thenReturn(dtoPage.number() - 1);
-        when(result.getContent()).thenReturn(dtoPage.content());
-        when(result.isFirst()).thenReturn(dtoPage.first());
-        when(result.isLast()).thenReturn(dtoPage.last());
+        when(result.getTotalPages()).thenReturn(dtoPageResponse.totalPages());
+        when(result.getSize()).thenReturn(dtoPageResponse.pageSize());
+        when(result.getTotalElements()).thenReturn(dtoPageResponse.totalElements());
+        when(result.getNumber()).thenReturn(dtoPageResponse.number() - 1);
+        when(result.getContent()).thenReturn(dtoPageResponse.content());
+        when(result.isFirst()).thenReturn(dtoPageResponse.first());
+        when(result.isLast()).thenReturn(dtoPageResponse.last());
         return result;
     }
 
