@@ -2,7 +2,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisEmailAlreadyExists;
-import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisNameAlreadyExist;
+import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisNameAlreadyExists;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ class UserServiceTest {
         String email = "test@gmail.com";
         User user = new User(username, password, email);
         Mockito.when(userRepository.existsByUsername(username)).thenReturn(true);
-        var actualException = assertThrows(UserWithThisNameAlreadyExist.class, ()->userService.save(user));
+        var actualException = assertThrows(UserWithThisNameAlreadyExists.class, () -> userService.save(user));
         assertEquals(HttpStatus.BAD_REQUEST, actualException.getHttpStatus());
         Mockito.verify(userRepository, Mockito.only()).existsByUsername(username);
     }

@@ -3,7 +3,7 @@ package com.blbulyandavbulyan.socialmedia.services;
 
 import com.blbulyandavbulyan.socialmedia.entites.User;
 import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisEmailAlreadyExists;
-import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisNameAlreadyExist;
+import com.blbulyandavbulyan.socialmedia.exceptions.user.UserWithThisNameAlreadyExists;
 import com.blbulyandavbulyan.socialmedia.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +24,7 @@ public class UserService implements UserDetailsService {
     }
     public void save(User user) {
         if (userRepository.existsByUsername(user.getUsername()))
-            throw new UserWithThisNameAlreadyExist(user.getUsername());
+            throw new UserWithThisNameAlreadyExists(user.getUsername());
         if(userRepository.existsByEmail(user.getEmail()))
             throw new UserWithThisEmailAlreadyExists(user.getEmail());
         userRepository.save(user);
