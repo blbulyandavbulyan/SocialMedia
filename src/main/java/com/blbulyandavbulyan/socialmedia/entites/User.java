@@ -4,7 +4,6 @@ import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserEm
 import com.blbulyandavbulyan.socialmedia.annotations.validation.user.ValidUserName;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +26,6 @@ public class User implements UserDetails {
     private String username;
     @NotBlank
     @Column(nullable = false)
-    @Size(min = 10, message = "Password too short")
     private String password;
     @ValidUserEmail
     @Column(nullable = false)
