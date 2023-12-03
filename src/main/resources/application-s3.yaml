@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: david
+    password: 4137
+    url: jdbc:postgresql://localhost:5432/socialmedia
+  jpa:
+    show-sql: true
+jwt:
+  lifetime: 10m
+socialmedia:
+  files:
+    mime-type-to-valid-extension:
+      "[image/jpeg]": [ ".jpeg", ".jpg", ".jpe", ".JPEG", ".JPG", ".JPE" ]
+      "[image/png]": [ ".png", ".PNG" ]
+  s3:
+    bucket-name: socialmedia
+    s3-url: http://localhost:4566
+    accessKeyId: test
+    secretAccessKey: test
