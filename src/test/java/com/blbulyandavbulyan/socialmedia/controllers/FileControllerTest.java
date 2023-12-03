@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -69,7 +68,7 @@ public class FileControllerTest {
         );
         HttpHeaders httpHeaders = new HttpHeaders();
         User user = new User("david", "sssfsfs", "test@gmail.com");
-        Mockito.when(fileConfiguration.getPath()).thenReturn(Files.createTempDirectory("socialMediaTmpDir"));
+//        Mockito.when(fileConfiguration.getPath()).thenReturn(Files.createTempDirectory("socialMediaTmpDir"));
         Mockito.when(fileConfiguration.getValidExtensionForMimeType(contentType)).thenReturn(Optional.of(Set.of(".jpg")));
         Mockito.when(userRepository.findById(user.getUsername())).thenReturn(Optional.of(user));
         String jwtToken = jwtTokenUtils.generateToken(user.getUsername(), user.getAuthorities());
