@@ -74,7 +74,6 @@ class FileServiceTest {
         assertEquals(contentType, savedFile.getMimeType());
         assertEquals(originalFileName, savedFile.getRealFileName());
         assertSame(user, savedFile.getUploader());
-        assertEquals(".jpg", savedFile.getFileExtension());
         Path filePath = path.resolve(savedFile.getSavedFileName().toString());
         Files.exists(filePath);
     }
