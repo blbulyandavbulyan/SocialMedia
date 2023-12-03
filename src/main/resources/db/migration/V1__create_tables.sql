@@ -9,7 +9,6 @@ CREATE TABLE files
     saved_file_name   UUID                        NOT NULL,
     uploader_username VARCHAR(50)                 NOT NULL,
     real_file_name    VARCHAR(255)                NOT NULL,
-    file_extension    VARCHAR(255)                NOT NULL,
     mime_type         VARCHAR(255)                NOT NULL,
     loading_time      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT pk_files PRIMARY KEY (saved_file_name),

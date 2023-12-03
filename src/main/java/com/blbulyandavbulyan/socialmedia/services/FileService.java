@@ -44,7 +44,7 @@ public class FileService {
         String fileExtension = extensionResolver.getFileExtension(multipartFile.getOriginalFilename()).orElseThrow();
         if (!validExtensionsOptional.get().contains(fileExtension))
             throw new UploadedFileHasInvalidExtensionException("Uploaded file has invalid extension!");
-        File file = new File(UUID.randomUUID(), uploader, multipartFile.getOriginalFilename(), fileExtension, multipartFile.getContentType());
+        File file = new File(UUID.randomUUID(), uploader, multipartFile.getOriginalFilename(), multipartFile.getContentType());
         fileRepository.save(file);
         try {
             Files.copy(multipartFile.getInputStream(), fileConfigurationProperties.getPath().resolve(file.getSavedFileName().toString()), StandardCopyOption.REPLACE_EXISTING);

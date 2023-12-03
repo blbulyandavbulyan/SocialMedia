@@ -136,7 +136,7 @@ class FileServiceTest {
         String fileExtension = ".jpg";
         String contentType = "image/jpeg";
         UUID savedFileName = UUID.randomUUID();
-        com.blbulyandavbulyan.socialmedia.entites.File file = new File(savedFileName, new User(), fileName, fileExtension, contentType);
+        com.blbulyandavbulyan.socialmedia.entites.File file = new File(savedFileName, new User(), fileName, contentType);
         Mockito.when(fileRepository.findById(savedFileName)).thenReturn(Optional.of(file));
         Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
         Path expectedFilePath = path.resolve(savedFileName.toString());
@@ -170,7 +170,7 @@ class FileServiceTest {
         String fileExtension = ".jpg";
         String contentType = "image/jpeg";
         UUID savedFileName = UUID.randomUUID();
-        com.blbulyandavbulyan.socialmedia.entites.File file = new File(savedFileName, new User(), fileName, fileExtension, contentType);
+        com.blbulyandavbulyan.socialmedia.entites.File file = new File(savedFileName, new User(), fileName, contentType);
         Mockito.when(fileRepository.findById(savedFileName)).thenReturn(Optional.of(file));
         Mockito.when(fileConfigurationProperties.getPath()).thenReturn(path);
         var actualException = assertThrows(FileNotFoundException.class, ()->fileService.getFile(savedFileName));

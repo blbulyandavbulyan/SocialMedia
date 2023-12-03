@@ -24,19 +24,16 @@ public class File {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "real_file_name", nullable = false)
     private String realFileName;
-    @Column(name = "file_extension", nullable = false)
-    private String fileExtension;
     @Column(name = "mime_type", nullable = false)
     private String mimeType;
     @CreationTimestamp
     @Column(name = "loading_time", nullable = false)
     private Instant loadingTime;
 
-    public File(UUID savedFileName, User uploader, String realFileName, String fileExtension, String mimeType) {
+    public File(UUID savedFileName, User uploader, String realFileName, String mimeType) {
         this.savedFileName = savedFileName;
         this.uploader = uploader;
         this.realFileName = realFileName;
-        this.fileExtension = fileExtension;
         this.mimeType = mimeType;
     }
 }
