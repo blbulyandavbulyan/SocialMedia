@@ -1,6 +1,7 @@
 package com.blbulyandavbulyan.socialmedia.services.filestorage;
 
 import com.blbulyandavbulyan.socialmedia.configs.S3ConfigurationProperties;
+import com.blbulyandavbulyan.socialmedia.exceptions.files.FileNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,6 +13,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
@@ -41,9 +43,11 @@ public class S3FileStorage implements FileStorage {
 
     @Override
     public Resource getFile(UUID fileUIID) {
-        ResponseInputStream<GetObjectResponse> object = s3Client.getObject(GetObjectRequest.builder().bucket(s3ConfigurationProperties.getBucketName()).key(fileUIID.toString()).build());
         try {
+            ResponseInputStream<GetObjectResponse> object = s3Client.getObject(GetObjectRequest.builder().bucket(s3ConfigurationProperties.getBucketName()).key(fileUIID.toString()).build());
             return new ByteArrayResource(object.readAllBytes());
+        } catch (NoSuchKeyException e) {
+            throw new FileNotFoundException("File with UUID " + fileUIID.toString() + " not found!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
