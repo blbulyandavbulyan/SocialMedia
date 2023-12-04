@@ -8,12 +8,10 @@ spring:
     show-sql: true
 jwt:
   lifetime: 10m
-socialmedia:
+social-media:
   files:
-    path: /home/david/uploadFiles
     mime-type-to-valid-extension:
       "[image/jpeg]": [ ".jpeg", ".jpg", ".jpe", ".JPEG", ".JPG", ".JPE" ]
       "[image/png]": [ ".png", ".PNG" ]
-  s3:
-    bucket-name: socialmedia
-    s3-url: http://localhost:4569
+  localstorage:
+    path: /home/david/uploadFiles

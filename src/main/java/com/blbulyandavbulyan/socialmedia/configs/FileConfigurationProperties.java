@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Data
-@ConfigurationProperties(prefix = "socialmedia.files")
+@ConfigurationProperties(prefix = "social-media.files")
 @Component
 public class FileConfigurationProperties {
     private HashMap<String, Set<String>> mimeTypeToValidExtension;

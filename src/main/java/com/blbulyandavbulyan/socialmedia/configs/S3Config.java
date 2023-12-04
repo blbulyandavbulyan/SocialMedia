@@ -18,9 +18,9 @@ import java.net.URI;
 @Profile("s3")
 public class S3Config {
     private final S3ConfigurationProperties s3ConfigurationProperties;
-    @Value("${socialmedia.s3.accessKeyId}")
+    @Value("${social-media.s3.accessKeyId}")
     private String accessKeyId;
-    @Value("${socialmedia.s3.secretAccessKey}")
+    @Value("${social-media.s3.secretAccessKey}")
     private String secretAccessKey;
     @Bean
     public S3Client s3Client() {

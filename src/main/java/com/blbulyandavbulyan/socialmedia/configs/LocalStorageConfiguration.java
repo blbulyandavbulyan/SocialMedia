@@ -10,7 +10,7 @@ import java.nio.file.Path;
 @Component
 @Data
 @Profile("localstorage")
-@ConfigurationProperties("socialmedia.localstorage")
+@ConfigurationProperties("social-media.localstorage")
 public class LocalStorageConfiguration {
     private Path path;
 }

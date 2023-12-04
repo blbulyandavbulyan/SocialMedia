@@ -8,7 +8,7 @@ spring:
     show-sql: true
 jwt:
   lifetime: 10m
-socialmedia:
+social-media:
   files:
     mime-type-to-valid-extension:
       "[image/jpeg]": [ ".jpeg", ".jpg", ".jpe", ".JPEG", ".JPG", ".JPE" ]
